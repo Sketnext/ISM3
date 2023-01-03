@@ -1,0 +1,119 @@
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+
+    <link rel="stylesheet" href="css/plot.css">
+    <link rel="stylesheet" href="css/main.css">
+    <title>ISM</title>
+
+    <script defer src="js/vue.global.js"></script>
+    <script defer src="js/render.js"></script>
+</head>
+
+<body class="dfac paa">
+    <main class="dfc ns" id="app">
+        <nav class="h20 fs0 df pr jcsb">
+            <div class="fs0 df">
+                <div class="dfac w23 h20 pr">
+                    <!-- estado.entrada -->
+                    <div class="paa z2" style="-webkit-app-region: drag;"></div>
+                    <img class="h15 w15 pt5 z1" :src="'./tray/' + icono_tray" alt="">
+                </div>
+                <div class="df aist mt4 gg4 z1 h20">
+                    <button 
+                        v-for="(apartado, key) in ui.apartados" 
+                        :class="{'bg_3': ui.apartado_selecionado == apartado.nombre}"
+                        class="a12b br df aic gg3 bg_2 bblr0 bbrr0 pr"
+                        @click="cambiarApartado(apartado.nombre)"
+                        type="button" 
+                        >
+                        <div class="bg_2 pa b-5 l0 h10 w5" v-if="key == 0"></div>
+                        <div 
+                            class="bg_3 pa a06q"
+                            :class="{'a06q2': key == 0}"
+                            v-if="ui.apartado_selecionado == apartado.nombre"
+                            ></div>
+                        <div class="dfac" v-html="apartado.svg"></div>
+                        <span v-if="ui.apartado_selecionado == apartado.nombre">{{ apartado.nombre }}</span>
+                    </button>         
+                </div>
+            </div>
+            <div class="fg1 w20" style="-webkit-app-region: drag;"></div>
+            <div class="df aic fs0 co_1 bg_3 a12d pl2">
+                <button type="button" class="a12c pr5" style="width: 25px;" id="cerrar-btn">
+                    <svg class="w15" viewBox="0 0 20 20" fill="currentColor"> <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" /> </svg>
+                </button>
+            </div>
+        </nav>
+        <div class="fg1 dfc a05">
+            <div class="a01 dfc pr">
+                <div class="fg1 df bg_3 mt5 ml5 z2 br p5" v-if="ui.apartado_selecionado == 'Estadisticas'">
+                    <div class="dfc fs0">
+                        <div class="df aic gg jcse">
+                            <button type="button" class="co_1"><</button>
+                            <span class="f9">29 de diciembre 2022</span>
+                            <button type="button" class="co_1">></button>
+                        </div>
+                        <div class="df mt5">
+                            <div></div>
+                            <div><canvas class="bg_2 br" id="tutorial" width="170" height="95"></canvas> </div>
+                        </div>
+                    </div>
+                    <div class="fg1">
+                    </div>
+                </div>
+                <div class="fg1 df" v-if="ui.apartado_selecionado == 'Monitor'">
+                    <div class="dfc f7 ffm jcsb tae pt2 pl6 pr3 mt5 a22 pr" style="border-top-left-radius: 0px;">
+                        <div class="pa t-20 r0 l0 bg_1 z1 h15 dfac tac pl3 a23b">(ms)</div>
+                        <div v-for="(punto, key) in estado.escala" :class="{'co_2': !esPar(key)}">{{ punto }}</div>
+                    </div>
+                    <div class="fg1 df aife ml3 pr ns bg_3 br oh mt4 z1" style="-webkit-app-region: drag;">
+                        <div class="pa r0 t0 df p5 z1 f8 ffm aic z2 br bbrr0 btlr0" style="backdrop-filter: blur(6px); background-color: #20252cba;">
+                            <!-- <table class="f7 tae co_1" style="border-spacing: 0px;">
+                                <tbody class="f7">
+                                    <tr> <td>{{ estado.maximo }}ms<td> <td :style="{color: colorParaMS(estado.maximo)}">MAX</td> </tr>
+                                    <tr> <td>{{ estado.minimo }}ms<td> <td :style="{color: colorParaMS(estado.minimo)}">MIN</td> </tr>
+                                </tbody>
+                            </table> -->
+                   
+                            <table class="f7 ml7 tae co_4 pr7" style="border-spacing: 0px;">
+                                <tbody class="f6 ffm">
+                                    <tr class="df jce"> <td class="df aic">IP</td> <td class="ml2">92.223.56.18</td> </tr>
+                                    <tr class="df jce f7"> 
+                                        <td class="df aic"> {{ estado.porcentajePerdidos }}% </td> 
+                                        <td class="ml2" :style="{color: colorParaDrops(estado.porcentajePerdidos)}">Packet Loss ●</td>
+                                    </tr>
+                                    <tr class="df jce f7">
+                                        <td>{{ estado.media }}ms</td>
+                                        <td class="ml2" :style="{color: colorParaMS(estado.media)}">Media ●</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="dfc">
+                                <div class="dfrw gg1 w40 oh br1"> <div v-for="ms in sortedArray" :style="{backgroundColor: color(ms)}" :class="{'br50': ms == 0}" class="w3 h3"></div> </div>
+                            </div>
+                     
+                        </div>
+                        <div class="paa dfac z4 f15 co_2" v-show="estado.grafico.length == 0">Esperando datos...</div>
+                        <div class="l1 r0 pa z2 a07 t05 b0 h1 df aifs f7 ffm lh12" :style="{height: linea_limite.h_min - 1}">
+                            <span class="m1 ml5 co_2">{{ estado.minimo }}</span>
+                        </div>
+                        <div class="l1 r0 pa z2 a07b t05 t0 h1 df aife f7 ffm lh12" :style="{height: (120 - linea_limite.h_max) - 1}">
+                            <span class="m1 ml5 co_2">{{ estado.maximo }}</span>
+                        </div>
+                        <div class="paa a02 f9 oh z1">
+                            <template v-for="(punto, key) in estado.grafico">
+                                <div v-if="punto[1] > 0" class="a02c" :key="'t'+key"
+                                    :style="{height: punto[1], backgroundColor: color(punto[0])}"></div>
+                                <div v-else :key="'f'+key" class="a02b"></div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

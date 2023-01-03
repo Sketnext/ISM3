@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas style="background-color:gainsboro;" id="c" width="170" height="95"></canvas>
+    <script>
+        var canvas = document.getElementById('c');
+        var c = document.getElementById('c').getContext("2d");
+        console.log(canvas.height);
+
+        let datos = {
+            dia: 29,
+            año: 2022,
+            ip: '8.8.8.8',
+
+            reqistro: [
+                // hora - minuto - perdidas - min - max
+                [0, 1, 0, 0, 400],
+                [0, 1, 5, 10, 400],
+                [0, 1, 10, 20, 400],
+                [0, 1, 15, 30, 400],
+                [0, 1, 20, 40, 400],
+                [0, 1, 25, 50, 400],
+                [0, 1, 30, 60, 400],
+                [0, 1, 35, 70, 400],
+                [0, 1, 40, 80, 400],
+                [0, 1, 45, 90, 400],
+                [0, 1, 50, 100, 400],
+                [0, 1, 55, 50, 400],
+            ],
+        };
+
+        // Configuracion del canvas
+            let conf = {
+                separacion_borde: 5,
+                indicadores: {
+                    ejeY: {
+                        font_size: 3
+                    }
+                }
+            }
+        // Pintado de Escalas:
+            // Eje Y
+            const indicadoresEjeY = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+            c.font = "2px serif";
+
+            indicadoresEjeY.forEach((indicador, index) => {
+                c.fillText(`${indicador}%`, 10, 50);
+            });
+
+            
+    </script>
+</body>
+</html>
