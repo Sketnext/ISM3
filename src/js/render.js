@@ -20,58 +20,47 @@ window.addEventListener('DOMContentLoaded', () => {
   $('cerrar-btn').addEventListener('click', () => {
     ipc.send('cerrar_ventana');
   });
-  $('minimizar-btn').addEventListener('click', () => {
-    ipc.send('minimizar_ventana');
-  });
+  // $('minimizar-btn').addEventListener('click', () => {
+  //   ipc.send('minimizar_ventana');
+  // });
 });
 
-ipcRenderer.on('ping_stdout_stream', (event, arg) => {
-  app._instance.ctx.manejar_datos_recividos(arg);
+ipcRenderer.on('monitor_update', (event, arg) => {
+  app._instance.ctx.actualizar_monitor(arg);
 });
+
 ipcRenderer.on('icono_tray', (event, arg) => {
   app._instance.ctx.cambiarIcono(arg);
 })
 
-let estado_test = [ "141", "127", "119", "104", "135", "127", "163", "108", 0, "119", "151", "109", 0, "140", "98", "152", "138", "123", "152", "138", "98", "130", "124", "151", "107", "132", "119", "115", "153", "141", "130", "127", "119", "115", "148", "104", "135", "129", "126", "123", "121", "145", 0, "160", "114", "153", "146", "135", "120", "151", "150", "136", "128", "145", "142", "140", "125", "111", "141", "128", "92", "154", "112", "119", "142", "139", "136", "131", "119", "145", "93", "120", "104", "141", "99", "135", "143", "117", "107", "133", "122", "151", "143", "135", "120", 0, "137", "124", "112", "149", "135", "127", "119", "118", 0, "119", "152", "141", "96", "127", "124", "121", "112", "149", "133", "131", "159", "106", "143", "140", 0, "121", "92", "143", "123", "113", "151", "135", 0, "147", "143", "103", "127", "115", "144", "128", "123", "122", "116", "151", "149", "146", "132", "129", "127", "114", "140", "136", "125", "115", 0, "132", "120", "135", "142", "143", "134", "95", "120", 0, "141", "133", "126", "121", "114", "142", "138", "134", "129", "113", "143", "97", "121", "145", "129", "119", "118", "114", "148", "144", "102", "139", "125", "152", "107", "143", "139", "136", "130", "126", 0, "118", "112", "110", "108", "135", "131", "125", 0, "158", "135", "119", "125", 0, "135", "132", "127", 0, "146", "104", "135", "119", "100", "133", "129", 0, "125", "160", 0, "129", "115", "159", "136", "134", "161", 0, "126", 0, "147", 0, "131", "162", "150", "145", 0, "151", "145", "133", 0, "131", "125", "100", "151", "104", "133", 0, "140", 0, "120", "146", "144", "97", "121", "152", "148", "121", "129", "123", "121", "147", "137", "103", "126", "113", "139", "134", "131", "139", "99", "127", "111", "113", "108", "132", "118", "152", "144", "141", "131", "126", "127", 0, 0, "135", "131", "115", 0, "116", "140", "112", "130", "126", "112", "137", "124", "159", "137", "125", 0, "132", "130", "122", "114", "138", 0, "149", "133", "129", "117", "145", "141", "117", "120", "106", "128", "123", "120", "116", "102", "128", 0, "139", "127", "126", 0, "109", "135", "97", "116", "152", "138", "124", "149", "107", "103", "100", "135", "121", "117", "103", "128", "112", "148", "143", "131", "117", "145", "141", "135", "128", "151", "140", "136", "172", "125", "122", "119", "148", "145", "136", "122", "110", "134", "121", 0, "138", "124", "121", "115", "152" ];
-let estado = {
-  tiempo: 60,
-  paquetes: 60,
-  icono: 'c',
-
-  grafico: [],
-  muestra: [
-    0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,
-  ],
-  muestra: [
-    400, 350, 300, 250, 200, 150, 100, 50, 25, 15,
-    400, 350, 300, 250, 200, 150, 100, 50, 25, 15,
-    400, 350, 300, 250, 200, 150, 100, 50, 25, 15,
-    400, 350, 300, 250, 200, 150, 100, 50, 25, 15,
-    400, 350, 300, 250, 200, 150, 100, 50, 25, 15,
-    400, 350, 300, 250, 200, 150, 100, 50, 25, 15,
-  ],
-  escala: [],
-
-  media: 200,
-  minimo: 100,
-  maximo: 300,
-  perdidos: 0,
-
-  entrada: 0,
-  estabilidad: 0,
-  porcentajePerdidos: 0,
-}
-
 const app = Vue.createApp({
   data() {
     return {
-      estado: estado,
-      estado_test: estado_test,
+      monitor: {
+        latidos: false,
+        grafico: {
+          ejeY: {
+            escala: [0, 400],
+            altura: 120, // PX
+
+            altura_maxima_registrada: 0,
+            altura_minima_registrada: 0,
+          },
+          ejeX: {
+            ancho: 325, // PX
+            coordenadas: [],
+          },
+
+          ms: {
+            perdidas: [0, 0],
+            muestra: [],
+            minimo: 0,
+            maximo: 0,
+            media: 0,
+          }
+        }
+      },
+
       latidos: 0,
       stop: false,
       icono_tray: 'c.png',
@@ -85,7 +74,7 @@ const app = Vue.createApp({
         modoObscuro: true,
         ventana_pineada: false,
 
-        apartado_selecionado: "Estadisticas",
+        apartado_selecionado: "Monitor",
         apartados: [
           { nombre: "Configuración", nombreOculto: true, svg: '<svg class="w10" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.84 1.804A1 1 0 018.82 1h2.36a1 1 0 01.98.804l.331 1.652a6.993 6.993 0 011.929 1.115l1.598-.54a1 1 0 011.186.447l1.18 2.044a1 1 0 01-.205 1.251l-1.267 1.113a7.047 7.047 0 010 2.228l1.267 1.113a1 1 0 01.206 1.25l-1.18 2.045a1 1 0 01-1.187.447l-1.598-.54a6.993 6.993 0 01-1.929 1.115l-.33 1.652a1 1 0 01-.98.804H8.82a1 1 0 01-.98-.804l-.331-1.652a6.993 6.993 0 01-1.929-1.115l-1.598.54a1 1 0 01-1.186-.447l-1.18-2.044a1 1 0 01.205-1.251l1.267-1.114a7.05 7.05 0 010-2.227L1.821 7.773a1 1 0 01-.206-1.25l1.18-2.045a1 1 0 011.187-.447l1.598.54A6.993 6.993 0 017.51 3.456l.33-1.652zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>' },
           { nombre: "Monitor", svg: '<svg class="h10 w10" viewBox="0 0 20 20" fill="currentColor"> <path fill-rule="evenodd" d="M2 4.25A2.25 2.25 0 014.25 2h11.5A2.25 2.25 0 0118 4.25v8.5A2.25 2.25 0 0115.75 15h-3.105a3.501 3.501 0 001.1 1.677A.75.75 0 0113.26 18H6.74a.75.75 0 01-.484-1.323A3.501 3.501 0 007.355 15H4.25A2.25 2.25 0 012 12.75v-8.5zm1.5 0a.75.75 0 01.75-.75h11.5a.75.75 0 01.75.75v7.5a.75.75 0 01-.75.75H4.25a.75.75 0 01-.75-.75v-7.5z" clip-rule="evenodd" /> </svg>' },
@@ -121,7 +110,7 @@ const app = Vue.createApp({
     }
   },
   mounted: function(){
-    this.renderizar();
+    // this.actualizar_monitor();
   },
   methods: {
     cambiarApartado: function(apartado){
@@ -130,30 +119,62 @@ const app = Vue.createApp({
     cambiarIcono: function(icono){
       this.icono_tray = icono;
     },
-    manejar_datos_recividos: function(datos){
-      // return;
+
+
+    actualizar_monitor: function(ping) {
       if (this.stop) return;
 
-      let entrada = 0;
-      let muestra = this.estado.muestra;
-
-      if (datos == "Tiempo de espera agotado para esta solicitud.") {
-        entrada = 0;
-      }else{
-        let m;
-        if ((m = /=([0-9]{0,3})ms/.exec(datos)) !== null) {
-          entrada = m[1];
-        }
+      let datos = {
+        altura_maxima_registrada: null,
+        altura_minima_registrada: null,
+        ejeX_coordenadas: []
       }
 
-      if (muestra.length >= this.estado.tiempo) muestra.shift();
-      muestra.push(entrada);
-
-      this.latidos = this.latidos == 1 ? 0 : 1;
-      this.estado.entrada = parseInt(entrada);
-      this.estado.muestra = muestra;
-      this.renderizar();
+      ping.muestra.forEach(ms => {
+        if (ms > this.monitor.grafico.ejeY.escala[1]) ms = this.monitor.grafico.ejeY.escala[1];
+        let altura = (this.monitor.grafico.ejeY.altura * ((ms / this.monitor.grafico.ejeY.escala[1]) * 100)) / 100;
+        
+        if (datos.altura_maxima_registrada < altura) datos.altura_maxima_registrada = altura;
+        if (datos.altura_minima_registrada > altura) datos.altura_minima_registrada = altura;
+        
+        datos.ejeX_coordenadas.push([ms, altura]);
+      });
+      
+      this.monitor.grafico.ejeY.altura_maxima_registrada = datos.altura_maxima_registrada;
+      this.monitor.grafico.ejeY.altura_minima_registrada = datos.altura_minima_registrada;
+      this.monitor.grafico.ejeX.coordenadas = datos.ejeX_coordenadas;
+      this.monitor.grafico.ms = {
+        perdidas: ping.perdidas,
+        muestra: ping.muestra,
+        minimo: ping.minimo,
+        maximo: ping.maximo,
+        media: ping.media,
+      },
+      this.monitor.latidos = this.monitor.latidos ? false : true;
     },
+    calcular_escala_ejeY: function(){
+      let elementos = [];
+      let conf = {
+        espacioEntrePuntos: 2, // PX
+        espacioPuntos: 10, // PX
+
+        espacioDisponibles: null,
+      };
+
+      conf.espacioDisponibles = Math.floor(
+        this.monitor.grafico.ejeY.altura / 
+        (conf.espacioEntrePuntos + conf.espacioPuntos)
+      );
+
+      let divisorPuntos = this.monitor.grafico.ejeY.escala[1] / conf.espacioDisponibles;
+      for (let i = 0; i <= conf.espacioDisponibles; i++) {
+        elementos.push(divisorPuntos * i);
+      }
+
+      elementos.reverse();
+      return elementos;
+    },
+
     esPar: function(numero){
       return (numero % 2) == 0;
     },
@@ -240,82 +261,13 @@ const app = Vue.createApp({
         }
       }
     },
-
-    renderizar: function(){
-      if (this.stop) return;
-
-      const datos = this.estado.muestra;
-      const canvas_h = 125;
-      const canvas_w = 325;
-
-      const grf_max = 400;
-      const grf_min = 0;
-
-      let h_max = 0;
-      let h_min = 400;
-
-
-      let estado = {
-        minimo: 0, media: 0, maximo: 0, icono: 'c',
-        muestra: 0, perdidos: 0, paquetes: 0, entrada: this.estado.entrada,
-        grafico: [], tiempo: this.estado.tiempo, escala: [], x: 'depl',
-        estabilidad: this.estado.estabilidad,
-        porcentajePerdidos: this.estado.porcentajePerdidos,
-      }
-
-      datos.forEach(latencia => {
-        if (latencia > 500) latencia = 500; 
-        if (latencia == 0 ) estado.perdidos ++;
-        // grafico - min 0 (0%) - max 140 (100%)
-        // latencia - min 0 - ref 500 = (100%)
-        const porcentaje = Math.round((latencia * 100) / grf_max);
-        const altura_calculada = Math.round((canvas_h * porcentaje) / 100);
- 
-        if (h_max < altura_calculada) h_max = altura_calculada;
-        if (h_min > altura_calculada && altura_calculada != 0) h_min = altura_calculada;
-
-        estado.grafico.push([latencia, altura_calculada]);
-      });
-      estado.muestra = datos;
-      estado.escala = [400,350,300,250,200,150,100,50,0];
-      estado.minimo = Math.min.apply(null, datos.filter(Boolean));
-      if (estado.minimo == Infinity) estado.minimo = 0;
-
-      estado.media = media(datos);
-      if (isNaN(estado.media)) estado.media = 0;
-
-      estado.maximo = Math.max(...datos);
-      if (estado.maximo == -Infinity) estado.maximo = 0;
-
-      estado.estabilidad = h_max - h_min;
-      estado.porcentajePerdidos = Math.round((estado.muestra.length * estado.perdidos) / 100);
-
-      if (estado.media == 0){
-        estado.estabilidad = '-';
-        estado.porcentajePerdidos = '0'
-      }
-
-      let ultimoPaqueteDrops = estado.muestra.at(-1) == 0 || estado.muestra.at(-1) == 999;
-      let letraTray = 'c';
-
-      if (estado.porcentajePerdidos <= 1 && estado.media < 200) letraTray = "b";
-      else if (estado.porcentajePerdidos <= 3 && estado.media < 250) letraTray = "r";
-      else letraTray = 'm';
-
-      let numero = ultimoPaqueteDrops ? '0' : '1';
-      estado.icono = letraTray + '_' + numero + '.png';
-
-      this.linea_limite.h_max = h_max;
-      this.linea_limite.h_min = h_min;
-      this.estado = estado;
-    },
   },
 
   computed: {
     sortedArray: function () {
       let grafico_ordenado = [];
 
-      this.estado.muestra.forEach(item => {
+      this.monitor.grafico.ms.muestra.forEach(item => {
         grafico_ordenado.push(item);
       });
       

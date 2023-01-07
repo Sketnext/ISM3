@@ -104,13 +104,22 @@ nav {
   display: flex;
 }
 .a02b{
-  background-color: var(--co_gaf_drop);
-  height: 3px;
+  height: 7px;
   width: 4px;
-  border-radius: 50%;
+  color: red;
+  font-size: 8px;
+  display: flex;
+  align-content: center;
+  justify-content: center;
 }
 .a02c{
   width: 4px;
+}
+.a02e{
+  background-color: #673ab7;
+  height: 3px;
+  width: 4px;
+  border-radius: 50%;
 }
 .a03{background-color: red;}
 .a04{

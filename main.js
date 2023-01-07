@@ -16,16 +16,16 @@ var mw_show,
 
 var ping = {
   // Muestra de ejemplo para calibrar
-  muestra: [
-    158, 149, 141, 128, 131, 137, 133, 164, 143,
-    140, 146, 137, 132, 146, 148, 144, 154, 145,
-    135, 161, 137, 142, 126, 129, 140, 149, 136,
-    129, 152, 999, 148, 138, 142, 159, 146, 130,
-    142, 135, 144, 152, 142, 128, 160, 147, 130,
-    139, 135, 131, 139, 145, 147, 165, 999, 140,
-    135, 142, 126, 147, 129],
+  // muestra: [
+  //   158, 149, 141, 128, 131, 137, 133, 164, 143,
+  //   140, 146, 137, 132, 146, 148, 144, 154, 145,
+  //   135, 161, 137, 142, 126, 129, 140, 149, 136,
+  //   129, 152, 999, 148, 138, 142, 159, 146, 130,
+  //   142, 135, 144, 152, 142, 128, 160, 147, 130,
+  //   139, 135, 131, 139, 145, 147, 165, 999, 140,
+  //   135, 142, 126, 147, 129],
+  muestra: [],
   perdidas: 0,
-  porcentajeDePerdidas: 0,
   minimo: 0,
   maximo: 0,
   media: 0,
@@ -33,14 +33,12 @@ var ping = {
 
 
 const media = arr => {
-  if (arr.length == 0) return 0;
-  arr.sort((a, b) => a - b);
-  const midpoint = Math.floor(arr.length / 2);
-  const median = arr.length % 2 === 1 ?
-    arr[midpoint] :
-    (arr[midpoint - 1] + arr[midpoint]) / 2;
-  return median;
+  let sumatoria = 0;
+  arr = arr.filter(item => item != 0);
+  arr.forEach(n => { sumatoria += parseInt(n); });
+  return Math.round(sumatoria / arr.length);
 };
+function rand(min, max) { const argc = arguments.length; if (argc === 0) { min = 0; max = 2147483647; } else if (argc === 1) { throw new Error('Warning: rand() expects exactly 2 parameters, 1 given'); } return Math.floor(Math.random() * (max - min + 1)) + min; }
 
 
 function dbPush_cambioMinuto() {
@@ -48,13 +46,9 @@ function dbPush_cambioMinuto() {
   if (ping.muestra.length != 60) return;
 
   const media = arr => {
-    if (arr.length == 0) return 0;
-    arr.sort((a, b) => a - b);
-    const midpoint = Math.floor(arr.length / 2);
-    const median = arr.length % 2 === 1 ?
-      arr[midpoint] :
-      (arr[midpoint - 1] + arr[midpoint]) / 2;
-    return median;
+    const mid = Math.floor(arr.length / 2),
+      nums = [...arr].sort((a, b) => a - b);
+    return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
   };
 
   let est = {
@@ -118,15 +112,11 @@ app.whenReady().then(() => {
       if (ping.muestra.length == 60){
         let letraTray = 'c';
         let ultimoPaqueteDrops = ping.muestra.at(-1) == 0 || ping.muestra.at(-1) == 999;
-        
-        ping.perdidas = 0;
-        ping.media = media(ping.muestra);
-        ping.muestra.forEach(ms => { if (ms == 999 || ms == 0) ping.perdidas ++; });
-        ping.porcentajeDePerdidas = Math.round( (ping.muestra.length * ping.perdidas) / 100 );
-        tray.setToolTip(`Media: ${ping.media}ms, Loss: ${ping.porcentajeDePerdidas}%`);
+      
+        tray.setToolTip(`Media: ${ping.media}ms, Loss: ${ping.perdidas[1]}%`);
 
-        if (ping.porcentajeDePerdidas <= 1 && ping.media < 200) letraTray = "b";
-        else if (ping.porcentajeDePerdidas <= 3 && ping.media < 250) letraTray = "r";
+        if (ping.perdidas[1] <= 1 && ping.media < 200) letraTray = "b";
+        else if (ping.perdidas[1] <= 3 && ping.media < 250) letraTray = "r";
         else letraTray = "m";
 
         let numero = ultimoPaqueteDrops ? '0' : '1';
@@ -141,20 +131,42 @@ app.whenReady().then(() => {
       }
     }
 
+    function calcularPing(entrada){
+      if (ping.muestra.length >= 60) ping.muestra.shift();
+
+      ping.muestra.push(parseInt(entrada));
+
+      ping.minimo = Math.min(...ping.muestra.filter((ms) =>{ if (ms < 999 && ms != 0) return true; }));
+      ping.media = media(ping.muestra);
+      ping.maximo = Math.max(0,...ping.muestra.filter((ms) =>{ if (ms < 999) return true; }));
+
+      ping.perdidas = [0, 0];
+      ping.muestra.forEach(ms => { if (ms == 999 || ms == 0) ping.perdidas[0] ++; });
+      ping.perdidas[1] =Math.floor((ping.perdidas[0] / ping.muestra.length) * 100);
+    }
+    
     pingSpawn = spawn('ping', ['8.8.8.8', '-w', '1000', '-t',]);
     pingSpawn.stdout.on('data', function (data) {
       let stdout = data.toString();
       let entrada = 0;
-      mw.webContents.send('ping_stdout_stream', stdout);
 
       if (stdout.startsWith("Tiempo") || stdout.startsWith("Request")) entrada = 999;
       if ((m = /=([0-9]{0,3})ms/.exec(stdout)) !== null) {
         entrada = m[1];
       }
-      if (ping.muestra.length >= 60) ping.muestra.shift();
-      ping.muestra.push(parseInt(entrada));
+
+      calcularPing(entrada);
+      mw.webContents.send('monitor_update', ping);
       actualizarIconoTray();
     });
+
+    // setInterval(() => {
+    //   calcularPing(rand(120, 320));
+    //   console.log(ping);
+    //   mw.webContents.send('monitor_update', ping);
+    //   actualizarIconoTray();
+    // }, 100);
+
     pingSpawn.stderr.on('data', function (data) { 
       mw.webContents.send('cmd_ping_stream', data.toString()); 
     });
