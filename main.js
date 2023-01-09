@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage } = require('electron');
+const { app, BrowserWindow, ipcMain, Tray, Menu } = require('electron');
 const sqlite3 = require('sqlite3').verbose();
 const spawn = require('child_process').spawn;
 const path = require('path');
@@ -15,15 +15,6 @@ var mw_show,
     pingSpawn;
 
 var ping = {
-  // Muestra de ejemplo para calibrar
-  // muestra: [
-  //   158, 149, 141, 128, 131, 137, 133, 164, 143,
-  //   140, 146, 137, 132, 146, 148, 144, 154, 145,
-  //   135, 161, 137, 142, 126, 129, 140, 149, 136,
-  //   129, 152, 999, 148, 138, 142, 159, 146, 130,
-  //   142, 135, 144, 152, 142, 128, 160, 147, 130,
-  //   139, 135, 131, 139, 145, 147, 165, 999, 140,
-  //   135, 142, 126, 147, 129],
   muestra: [],
   perdidas: 0,
   minimo: 0,
@@ -45,25 +36,12 @@ function dbPush_cambioMinuto() {
   fecha = new Date;
   if (ping.muestra.length != 60) return;
 
-  const media = arr => {
-    const mid = Math.floor(arr.length / 2),
-      nums = [...arr].sort((a, b) => a - b);
-    return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
-  };
-
-  let est = {
-    min: parseInt(Math.min.apply(null, ping.muestra.filter(Boolean))),
-    max: parseInt(Math.max(...ping.muestra)),
-    med: parseInt(media(ping.muestra)),
-    dops: parseInt(ping.muestra.filter((ms) => ms == 0).length)
-  };
-
   let stmt = db.prepare(
     `INSERT INTO "main"."estadisticas"("min","max","med","drops","dia","hora","mes","minuto")` +
     `VALUES (?,?,?,?,?,?,?,?);`
   )
   stmt.run(
-    est.min, est.max, est.med, est.dops, fecha.getDate(), fecha.getHours(), fecha.getMonth(),
+    ping.minimo, ping.maximo, ping.media, ping.perdidas[1], fecha.getDate(), fecha.getHours(), fecha.getMonth(),
     fecha.getMinutes()
   )
 }

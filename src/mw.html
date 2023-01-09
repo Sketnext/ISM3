@@ -63,7 +63,7 @@
                     <div class="fg1">
                     </div>
                 </div>
-                <div class="fg1 df" v-if="ui.apartado_selecionado == 'Monitor'">
+                <div class="fg1 df" v-else-if="ui.apartado_selecionado == 'Monitor'">
                     <div class="dfc f7 ffm jcsb tae pt2 pl6 pr3 a22 pr" style="border-top-left-radius: 0px;">
                         <div class="pa t-20 r0 l0 bg_1 z1 h15 dfac tac pl3 a23b">(ms)</div>
                         <div v-for="(punto, key) in calcular_escala_ejeY()" :class="{'co_2': !esPar(key)}">{{ punto }}</div>
@@ -90,7 +90,7 @@
                                 </tbody>
                             </table>
                             <div class="dfc h23">
-                                <div class="dfrw gg1 w40 oh br1"> <div v-for="ms in sortedArray" :style="{backgroundColor: color(ms)}" :class="{'br50': ms == 0}" class="w3 h3"></div> </div>
+                                <div class="dfrw gg1 w40 oh br1"> <div v-for="ms in sortedArray" :style="{backgroundColor: color(ms)}" :class="{'br50': ms == monitor.grafico.ejeY.escala[1]}" class="w3 h3"></div> </div>
                             </div>
                      
                         </div>
@@ -111,6 +111,9 @@
                             </template>
                         </div>
                     </div>
+                </div>
+                <div v-else>
+                    <div class="paa bg_3 p10 ml23 z2 mt5 f12 co_2">Proximamente...</div>
                 </div>
             </div>
         </div>
