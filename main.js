@@ -114,12 +114,12 @@ app.whenReady().then(() => {
 
       ping.muestra.push(parseInt(entrada));
 
-      ping.minimo = Math.min(...ping.muestra.filter((ms) =>{ if (ms < 999 && ms != 0) return true; }));
+      ping.minimo = Math.min(999, ...ping.muestra.filter((ms) =>{ if (ms > 0) return true; }));
       ping.media = media(ping.muestra);
-      ping.maximo = Math.max(0,...ping.muestra.filter((ms) =>{ if (ms < 999) return true; }));
+      ping.maximo = Math.max(0,...ping.muestra.filter((ms) =>{ if (ms > 0) return true; }));
 
       ping.perdidas = [0, 0];
-      ping.muestra.forEach(ms => { if (ms == 999 || ms == 0) ping.perdidas[0] ++; });
+      ping.muestra.forEach(ms => { if (ms == -1 || ms == 0) ping.perdidas[0] ++; });
       ping.perdidas[1] =Math.floor((ping.perdidas[0] / ping.muestra.length) * 100);
     }
     
@@ -128,7 +128,7 @@ app.whenReady().then(() => {
       let stdout = data.toString();
       let entrada = 0;
 
-      if (stdout.startsWith("Tiempo") || stdout.startsWith("Request")) entrada = 999;
+      if (stdout.startsWith("Tiempo") || stdout.startsWith("Request")) entrada = -1;
       if ((m = /=([0-9]{0,3})ms/.exec(stdout)) !== null) {
         entrada = m[1];
       }

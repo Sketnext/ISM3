@@ -65,32 +65,38 @@
                 </div>
                 <div class="fg1 df" v-else-if="ui.apartado_selecionado == 'Monitor'">
                     <div class="dfc f7 ffm jcsb tae pt2 pl6 pr3 a22 pr" style="border-top-left-radius: 0px;">
-                        <div class="pa t-20 r0 l0 bg_1 z1 h15 dfac tac pl3 a23b">(ms)</div>
+                        <div class="pa t-20 r0 l0 bg_1 z1 h20 dfac tac pl3 a23b">(ms)</div>
                         <div v-for="(punto, key) in calcular_escala_ejeY()" :class="{'co_2': !esPar(key)}">{{ punto }}</div>
                     </div>
-                    <div class="fg1 df aife ml3 pr ns bg_3 br oh mt4 z1" style="-webkit-app-region: drag;">
+                    <div class="fg1 df aife ml3 pr ns bg_3 br oh mt4 z1">
                         <div class="pa r0 t0 df p5 z1 f8 ffm aic z2 br bbrr0 btlr0" style="backdrop-filter: blur(6px); background-color: #20252cba;">
-                            <table class="f7 tae co_4 pr5" style="border-spacing: 0px;">
-                                <tbody class="f6 ffm">
-                                    <!-- <tr class="df jce"> <td class="df aic">IP</td> <td class="ml2">92.223.56.18</td> </tr> -->
-                                    <tr class="df jce f7"> 
-                                        <td class="df aic"> {{ monitor.grafico.ms.perdidas[1] }}% </td> 
-                                        <td class="ml2" :style="{color: colorParaDrops(monitor.grafico.ms.perdidas[1])}">Packet Loss ●</td>
-                                    </tr>
-                                    <tr class="df jce f7">
-                                        <td>{{ monitor.grafico.ms.media }}ms</td>
-                                        <td class="ml2" :style="{color: colorParaMS(monitor.grafico.ms.media)}">Media ●</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <table class="f7 tae co_1 mr7" style="border-spacing: 0px;">
-                                <tbody class="f7">
-                                    <tr> <td>{{ monitor.grafico.ms.maximo }}ms<td> <td :style="{color: colorParaMS(monitor.grafico.ms.maximo)}">MAX ●</td> </tr>
-                                    <tr> <td>{{ monitor.grafico.ms.minimo }}ms<td> <td :style="{color: colorParaMS(monitor.grafico.ms.minimo)}">MIN ●</td> </tr>
-                                </tbody>
-                            </table>
-                            <div class="dfc h23">
-                                <div class="dfrw gg1 w40 oh br1"> <div v-for="ms in sortedArray" :style="{backgroundColor: color(ms)}" :class="{'br50': ms == monitor.grafico.ejeY.escala[1]}" class="w3 h3"></div> </div>
+                            <div class="df">
+                                <table class="f7 tae co_4 pr5" style="border-spacing: 0px;">
+                                    <tbody class="f6 ffm">
+                                        <!-- <tr class="df jce"> <td class="df aic">IP</td> <td class="ml2">92.223.56.18</td> </tr> -->
+                                        <tr class="df jce f7"> 
+                                            <td class="df aic"> {{ monitor.grafico.ms.perdidas[1] }}% </td> 
+                                            <td class="ml2" :style="{color: colorParaDrops(monitor.grafico.ms.perdidas[1])}">Packet Loss ●</td>
+                                        </tr>
+                                        <tr class="df jce f7">
+                                            <td>{{ monitor.grafico.ms.media }}ms</td>
+                                            <td class="ml2" :style="{color: colorParaMS(monitor.grafico.ms.media)}">Media ●</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <table class="f7 tae co_1 mr7" style="border-spacing: 0px;">
+                                    <tbody class="f7">
+                                        <tr> <td>{{ monitor.grafico.ms.maximo }}ms</td> <td :style="{color: colorParaMS(monitor.grafico.ms.maximo)}">MAX ●</td> </tr>
+                                        <tr> <td>{{ monitor.grafico.ms.minimo }}ms</td> <td :style="{color: colorParaMS(monitor.grafico.ms.minimo)}">MIN ●</td> </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+    
+                            <div class="dfc h23 pr">
+                                <div class="dfrw gg1 w40 oh br1"> 
+                                    <div v-for="ms in sortedArray" :style="{backgroundColor: color(ms)}" :class="{'br50': ms == 999}" class="w3 h3"></div>
+                                </div>
+                                <div class="pa b-10 l0 r0 tac f6">{{ getFecha() }}</div>
                             </div>
                      
                         </div>
@@ -103,11 +109,10 @@
                         </div>
                         <div class="paa a02 f9 oh z1">
                             <template v-for="(punto, key) in monitor.grafico.ejeX.coordenadas">
-                                <div v-if="punto[0] == 0" :key="'f'+key" class="a02e"></div>
-                                <div v-else-if="punto[0] == monitor.grafico.ejeY.escala[1]" :key="'y'+key" class="a02b co_r">x</div>
-                                <div v-else-if="punto[0] > 0" class="a02c" :key="'t'+key"
+                                <!--Perdida--><div v-if="punto[0] == -1" :key="'d'+key" class="a02b"></div>
+                                <!--Desconexion--><div v-else-if="punto[0] == 0" :key="'f'+key" class="a02e"></div>
+                                <!--Barra--><div v-else-if="punto[0] > 0" class="a02c" :key="'t'+key"
                                     :style="{height: punto[1], backgroundColor: color(punto[0])}"></div>
-                                <div v-else :key="'r'+key" class="a02b"></div>
                             </template>
                         </div>
                     </div>

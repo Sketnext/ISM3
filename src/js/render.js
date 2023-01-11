@@ -120,6 +120,11 @@ const app = Vue.createApp({
       this.icono_tray = icono;
     },
 
+    getFecha: function() {
+      let x = new Date();
+      return x.toLocaleTimeString();
+    },
+
 
     actualizar_monitor: function(ping) {
       if (this.stop) return;

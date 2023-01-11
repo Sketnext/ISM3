@@ -26,7 +26,7 @@ body {
 
 
   --co_gaf_fac: 60%;
-  --co_gaf_amarillo: rgb(255 235 59 / var(--co_gaf_fac));
+  --co_gaf_amarillo: rgb(240 223 73 / var(--co_gaf_fac));
   --co_gaf_verde: rgb(3 183 59 / var(--co_gaf_fac));
   --co_gaf_rojo: rgb(207 72 29 / var(--co_gaf_fac));
   --co_gaf_drop: #f44336;
@@ -104,13 +104,11 @@ nav {
   display: flex;
 }
 .a02b{
-  height: 7px;
-  width: 4px;
-  color: red;
-  font-size: 8px;
-  display: flex;
-  align-content: center;
-  justify-content: center;
+  height: 3px;
+  width: 3px;
+  background-color: #f443364d;
+  border-radius: 1px;
+  border: 1px solid var(--co_gaf_drop);
 }
 .a02c{
   width: 4px;
