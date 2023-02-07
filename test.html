@@ -6,52 +6,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-<body>
-    <canvas style="background-color:gainsboro;" id="c" width="170" height="95"></canvas>
+<body style="background-color: #282e37;">
+    <canvas style="background-color:rgba(220, 220, 220, 0.013);" id="c" width="170" height="95"></canvas>
     <script>
+
+    function getRandomItem(arr) {
+        const randomIndex = Math.floor(Math.random() * arr.length);
+        const item = arr[randomIndex];
+        return item;
+    }
+    function colorBarra(latencia) {
+        if (latencia == 0) return '#673ab7';
+        else if (latencia < 150) return '#03b73b99';
+        else if (latencia >= 150 && latencia <= 300) return '#f0df4999';
+        else return '#f44336';
+    }
+    function calcular_escala_ejeY(altura_canvas, maximo_escala_ms){
+        let elementos = [];
+        let conf = {
+            espacioEntrePuntos: 2,
+            espacioPuntos: 10,
+            espacioDisponibles: null,
+        };
+        conf.espacioDisponibles = Math.floor( 
+            altura_canvas / (conf.espacioEntrePuntos + conf.espacioPuntos) 
+        );
+
+        let divisorPuntos = maximo_escala_ms / conf.espacioDisponibles;
+        for (let i = 0; i <= conf.espacioDisponibles; i++) {
+            elementos.push(Math.round(divisorPuntos * i));
+        }
+
+        elementos.reverse();
+        return elementos;
+    }
+    function render_canvas_monitor(muestra) {
         var canvas = document.getElementById('c');
         var c = document.getElementById('c').getContext("2d");
         console.log(canvas.height);
 
-        let datos = {
-            dia: 29,
-            año: 2022,
-            ip: '8.8.8.8',
+        let muestra_ms = [ 130, 161, 167, 146, 144, 124, 124, -1, -1, 146, -1, -1, 151, 133, 130, 130, 168, 157, 139, 134, 130, 158, 145, 180, -1, 146, -1, 142, 138, 162, 161, 145, 140, 170, 154, 134, 137, 159, 147, 201, 161, 168, 186, 134, -1, 160, 148, 124, 130, 148, 175, 160, 147, 132, -1, 153, 180, -1, 177, 185 ];
+        let conf = {
+            separacion_borde: 5,
+            ancho: 247,
+            alto: 128,
 
-            reqistro: [
-                // hora - minuto - perdidas - min - max
-                [0, 1, 0, 0, 400],
-                [0, 1, 5, 10, 400],
-                [0, 1, 10, 20, 400],
-                [0, 1, 15, 30, 400],
-                [0, 1, 20, 40, 400],
-                [0, 1, 25, 50, 400],
-                [0, 1, 30, 60, 400],
-                [0, 1, 35, 70, 400],
-                [0, 1, 40, 80, 400],
-                [0, 1, 45, 90, 400],
-                [0, 1, 50, 100, 400],
-                [0, 1, 55, 50, 400],
-            ],
-        };
-
-        // Configuracion del canvas
-            let conf = {
-                separacion_borde: 5,
-                indicadores: {
-                    ejeY: {
-                        font_size: 3
-                    }
+            indicadores: {
+                ejeY: {
+                    font_size: 7,
+                    maximo: 400
                 }
             }
-        // Pintado de Escalas:
-            // Eje Y
-            const indicadoresEjeY = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
-            c.font = "2px serif";
+        }
+        
+        canvas.height = conf.alto;
+        canvas.width = conf.ancho;
+        
+        const indicadoresEjeY = calcular_escala_ejeY(conf.alto, 400);
+        const separacionEjeY = conf.alto / indicadoresEjeY.length;
 
-            indicadoresEjeY.forEach((indicador, index) => {
-                c.fillText(`${indicador}%`, 10, 50);
-            });
+        c.font = `${conf.indicadores.ejeY.font_size}px monospace`;
+
+        indicadoresEjeY.forEach((indicador, index) => {
+            c.fillStyle = (index % 2) == 0 ? "rgb(255 255 255 / 100%)" : "rgb(255 255 255 / 50%)";
+            c.fillText(
+                `${indicador}`, 3, 
+                (separacionEjeY * index) + conf.indicadores.ejeY.font_size 
+            );
+
+            c.strokeStyle = 'rgb(255 255 255 / 10%)';
+            c.beginPath();
+            c.moveTo(18, (separacionEjeY * index)+5);
+            c.lineTo(conf.ancho, (separacionEjeY * index)+5);
+            c.stroke();
+        });
+        
+        const factorProporcionEjeX = conf.alto / indicadoresEjeY[0];
+        let coordenadas_ejeX = [];
+
+        muestra_ms.forEach(ms => {
+            if (ms > conf.indicadores.ejeY.maximo) ms = conf.indicadores.ejeY.maximo;
+            let altura = conf.alto - ((conf.alto * ((ms / conf.indicadores.ejeY.maximo) * 100)) / 100);
+            
+            coordenadas_ejeX.push([ms, altura]);
+        });
+
+        coordenadas_ejeX.forEach((ms, index) => {
+            let startXpoint = 18;
+            let espacio_por_barra = 3;
+            let separacion = ((espacio_por_barra)  * index) + startXpoint;
+
+            c.fillStyle = colorBarra(ms[0]);
+            c.fillRect(separacion, ms[1], espacio_por_barra, conf.alto);
+        });
+    }
+
 
             
     </script>

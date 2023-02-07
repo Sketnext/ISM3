@@ -25,8 +25,18 @@ window.addEventListener('DOMContentLoaded', () => {
   // });
 });
 
+ipcRenderer.on('window_resize', (event, size) => {
+  app._instance.data.ui.mw.ancho = size.ancho;
+  app._instance.data.ui.mw.alto = size.alto;
+  app._instance.ctx.actualizar_monitor(app._instance.data.monitor.cache);
+});
+
 ipcRenderer.on('monitor_update', (event, arg) => {
   app._instance.ctx.actualizar_monitor(arg);
+});
+
+ipcRenderer.on('estadisticas_update', (event, arg) => {
+  app._instance.ctx.actualizar_estadisticas(arg);
 });
 
 ipcRenderer.on('icono_tray', (event, arg) => {
@@ -37,6 +47,12 @@ const app = Vue.createApp({
   data() {
     return {
       monitor: {
+        stop_update: false,
+        sonidos: false,
+        muestra_largo: 60,
+        ip_objetivo: '8.8.8.8',
+
+        cache: [],
         latidos: false,
         grafico: {
           ejeY: {
@@ -45,6 +61,11 @@ const app = Vue.createApp({
 
             altura_maxima_registrada: 0,
             altura_minima_registrada: 0,
+
+            indicadores: {
+              max: 0,
+              min: 0
+            }
           },
           ejeX: {
             ancho: 325, // PX
@@ -60,6 +81,22 @@ const app = Vue.createApp({
           }
         }
       },
+      estadisticas: {
+        datos: {},
+
+        ui: {
+          limite_maximo: 80,
+          ancho_barras: 1,
+
+          alto_graf_dia: 100,
+        },
+        dias: [
+          // { /* Template de ejemplo */
+          //   fecha: [],
+          //   puntos: []
+          // }
+        ]
+      },
 
       latidos: 0,
       stop: false,
@@ -73,13 +110,16 @@ const app = Vue.createApp({
       ui: {
         modoObscuro: true,
         ventana_pineada: false,
+        mw:{
+          ancho: 0,
+          alto: 0
+        },
 
-        apartado_selecionado: "Monitor",
+        apartado_selecionado: "Configuración",
         apartados: [
           { nombre: "Configuración", nombreOculto: true, svg: '<svg class="w10" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.84 1.804A1 1 0 018.82 1h2.36a1 1 0 01.98.804l.331 1.652a6.993 6.993 0 011.929 1.115l1.598-.54a1 1 0 011.186.447l1.18 2.044a1 1 0 01-.205 1.251l-1.267 1.113a7.047 7.047 0 010 2.228l1.267 1.113a1 1 0 01.206 1.25l-1.18 2.045a1 1 0 01-1.187.447l-1.598-.54a6.993 6.993 0 01-1.929 1.115l-.33 1.652a1 1 0 01-.98.804H8.82a1 1 0 01-.98-.804l-.331-1.652a6.993 6.993 0 01-1.929-1.115l-1.598.54a1 1 0 01-1.186-.447l-1.18-2.044a1 1 0 01.205-1.251l1.267-1.114a7.05 7.05 0 010-2.227L1.821 7.773a1 1 0 01-.206-1.25l1.18-2.045a1 1 0 011.187-.447l1.598.54A6.993 6.993 0 017.51 3.456l.33-1.652zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>' },
           { nombre: "Monitor", svg: '<svg class="h10 w10" viewBox="0 0 20 20" fill="currentColor"> <path fill-rule="evenodd" d="M2 4.25A2.25 2.25 0 014.25 2h11.5A2.25 2.25 0 0118 4.25v8.5A2.25 2.25 0 0115.75 15h-3.105a3.501 3.501 0 001.1 1.677A.75.75 0 0113.26 18H6.74a.75.75 0 01-.484-1.323A3.501 3.501 0 007.355 15H4.25A2.25 2.25 0 012 12.75v-8.5zm1.5 0a.75.75 0 01.75-.75h11.5a.75.75 0 01.75.75v7.5a.75.75 0 01-.75.75H4.25a.75.75 0 01-.75-.75v-7.5z" clip-rule="evenodd" /> </svg>' },
           { nombre: "Estadisticas", svg: '<svg class="h10 w10" viewBox="0 0 20 20" fill="currentColor"> <path fill-rule="evenodd" d="M1 2.75A.75.75 0 011.75 2h16.5a.75.75 0 010 1.5H18v8.75A2.75 2.75 0 0115.25 15h-1.072l.798 3.06a.75.75 0 01-1.452.38L13.41 18H6.59l-.114.44a.75.75 0 01-1.452-.38L5.823 15H4.75A2.75 2.75 0 012 12.25V3.5h-.25A.75.75 0 011 2.75zM7.373 15l-.391 1.5h6.037l-.392-1.5H7.373zm7.49-8.931a.75.75 0 01-.175 1.046 19.326 19.326 0 00-3.398 3.098.75.75 0 01-1.097.04L8.5 8.561l-2.22 2.22A.75.75 0 115.22 9.72l2.75-2.75a.75.75 0 011.06 0l1.664 1.663a20.786 20.786 0 013.122-2.74.75.75 0 011.046.176z" clip-rule="evenodd" /> </svg>' },
-          { nombre: "Juegos", svg: '<svg class="h10 w10" viewBox="0 0 24 24" fill="currentColor"> <path fill-rule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clip-rule="evenodd"/> </svg>' },
           { nombre: "Mapa", svg: '<svg class="h10 w10" viewBox="0 0 24 24" fill="currentColor"> <path fill-rule="evenodd" d="M8.161 2.58a1.875 1.875 0 011.678 0l4.993 2.498c.106.052.23.052.336 0l3.869-1.935A1.875 1.875 0 0121.75 4.82v12.485c0 .71-.401 1.36-1.037 1.677l-4.875 2.437a1.875 1.875 0 01-1.676 0l-4.994-2.497a.375.375 0 00-.336 0l-3.868 1.935A1.875 1.875 0 012.25 19.18V6.695c0-.71.401-1.36 1.036-1.677l4.875-2.437zM9 6a.75.75 0 01.75.75V15a.75.75 0 01-1.5 0V6.75A.75.75 0 019 6zm6.75 3a.75.75 0 00-1.5 0v8.25a.75.75 0 001.5 0V9z" clip - rule="evenodd" /> </svg > ' },
         ],
 
@@ -110,11 +150,27 @@ const app = Vue.createApp({
     }
   },
   mounted: function(){
+    ipc.send('mw_size?');
+    this.cambiarApartado('Monitor');
     // this.actualizar_monitor();
+    
   },
   methods: {
+    monitor_cambiar_size_muestra: function(size){
+      this.monitor.muestra_largo = size;
+    },
     cambiarApartado: function(apartado){
       this.ui.apartado_selecionado = apartado;
+
+      switch (apartado) {
+        case 'Estadisticas':
+          this.$nextTick()
+          .then(()=>{
+            this.$refs.st_inp_date.valueAsDate = new Date();
+            this.evt_est_cambiarFecha();
+          });
+          break;
+      }
     },
     cambiarIcono: function(icono){
       this.icono_tray = icono;
@@ -127,20 +183,25 @@ const app = Vue.createApp({
 
 
     actualizar_monitor: function(ping) {
-      if (this.stop) return;
+      const ESPACIO_ABAJO = 14;
+
+      if (this.monitor.stop_update) return;
+      if (this.ui.apartado_selecionado != "Monitor") return;
+          this.monitor.cache = ping;
 
       let datos = {
-        altura_maxima_registrada: null,
-        altura_minima_registrada: null,
+        altura_maxima_registrada: 0,
+        altura_minima_registrada: this.monitor.grafico.ejeY.escala[1],
         ejeX_coordenadas: []
       }
 
+      if (ping.muestra == undefined) return;
       ping.muestra.forEach(ms => {
         if (ms > this.monitor.grafico.ejeY.escala[1]) ms = this.monitor.grafico.ejeY.escala[1];
-        let altura = (this.monitor.grafico.ejeY.altura * ((ms / this.monitor.grafico.ejeY.escala[1]) * 100)) / 100;
+        let altura = ((this.ui.mw.alto - 20 - ESPACIO_ABAJO) * ((ms / this.monitor.grafico.ejeY.escala[1]) * 100)) / 100;
         
         if (datos.altura_maxima_registrada < altura) datos.altura_maxima_registrada = altura;
-        if (datos.altura_minima_registrada > altura) datos.altura_minima_registrada = altura;
+        if (datos.altura_minima_registrada > altura && altura > 0) datos.altura_minima_registrada = altura;
         
         datos.ejeX_coordenadas.push([ms, altura]);
       });
@@ -156,7 +217,21 @@ const app = Vue.createApp({
         media: ping.media,
       },
       this.monitor.latidos = this.monitor.latidos ? false : true;
+      this.monitor.grafico.ejeY.indicadores.min = datos.altura_minima_registrada;
+      this.monitor.grafico.ejeY.indicadores.max = Math.round((this.ui.mw.alto - 20 - ESPACIO_ABAJO) - datos.altura_maxima_registrada);
     },
+    actualizar_estadisticas: function(input_day) {
+      let input_day_time = input_day.fecha.getTime();
+      let busqueda =  this.estadisticas.dias.findIndex(
+        dia => dia.fecha.getTime() == input_day_time
+      );
+      if (busqueda == -1){
+        this.estadisticas.dias.push(input_day);
+      }else if(busqueda >= 0){
+        this.estadisticas.dias[busqueda] = input_day;
+      }
+    },
+
     calcular_escala_ejeY: function(){
       let elementos = [];
       let conf = {
@@ -167,13 +242,13 @@ const app = Vue.createApp({
       };
 
       conf.espacioDisponibles = Math.floor(
-        this.monitor.grafico.ejeY.altura / 
+        (this.ui.mw.alto - 20) / 
         (conf.espacioEntrePuntos + conf.espacioPuntos)
       );
 
       let divisorPuntos = this.monitor.grafico.ejeY.escala[1] / conf.espacioDisponibles;
       for (let i = 0; i <= conf.espacioDisponibles; i++) {
-        elementos.push(divisorPuntos * i);
+        elementos.push(Math.floor(divisorPuntos * i));
       }
 
       elementos.reverse();
@@ -266,6 +341,31 @@ const app = Vue.createApp({
         }
       }
     },
+    fn_format24h_to_12h: function (horas) {
+      return `${(horas % 12) || 12} ${horas >= 12 ? 'PM' : 'AM'}`;
+    },
+    btn_est_fechaSiguiente: function(e) {
+      this.$refs.st_inp_date.stepUp();
+      this.evt_est_cambiarFecha();
+    },
+    btn_est_fechaAnterior: function(e) {
+      this.$refs.st_inp_date.stepDown();
+      this.evt_est_cambiarFecha();
+    },
+    evt_est_cambiarFecha: function() {
+      let d = this.$refs.st_inp_date.valueAsDate;
+      let r = [
+        parseInt(d.getDate()),
+        parseInt((d.getMonth() + 1)),
+        parseInt(d.getFullYear()) 
+      ]
+      ipc.send('obtener_estadisticas', r[0], r[1], r[2]);
+    },
+    btn_maximizar: function(){ ipc.send('toggle_maximizar'); },
+    btn_minimizar: function(){ ipc.send('minimizar_ventana'); },
+    btn_cambiar_tamaño: function(tamaño){ 
+      ipc.send('cambiar_tamaño_ventana', tamaño); 
+    }
   },
 
   computed: {
@@ -278,6 +378,10 @@ const app = Vue.createApp({
       
 
       return grafico_ordenado.sort().reverse();
+    },
+
+    render_est_dias: function(){
+
     }
   }
 })

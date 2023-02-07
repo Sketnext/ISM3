@@ -11,20 +11,20 @@
     <script defer src="js/render.js"></script>
 </head>
 
-<body class="dfac paa">
-    <main class="dfc ns" id="app">
-        <nav class="h20 fs0 df pr jcsb">
+<body class="df paa">
+    <main class="dfc ns fg1" id="app">
+        <nav class="fs0 df pr jcsb mb3">
             <div class="fs0 df">
-                <div class="dfac w23 h20 pr">
+                <div class="dfac w23 h20 pr nav_cont_tray">
                     <!-- estado.entrada -->
                     <div class="paa z2" style="-webkit-app-region: drag;"></div>
-                    <img class="h15 w15 pt5 z1" :src="'./tray/' + icono_tray" alt="">
+                    <img class="h15 w15 pt5 z1 pr t1" tray :src="'./tray/' + icono_tray" alt="">
                 </div>
-                <div class="df aist mt4 gg4 z1 h20">
+                <div class="df aist mt4 gg4 z1 h20 nav_cont_botones_menu">
                     <button 
                         v-for="(apartado, key) in ui.apartados" 
                         :class="{'bg_3': ui.apartado_selecionado == apartado.nombre}"
-                        class="a12b br df aic gg3 bg_2 bblr0 bbrr0 pr"
+                        class="a12b br df aic gg3 bg_2 bblr0 bbrr0 pr nav_botones_menu"
                         @click="cambiarApartado(apartado.nombre)"
                         type="button" 
                         >
@@ -34,91 +34,260 @@
                             :class="{'a06q2': key == 0}"
                             v-if="ui.apartado_selecionado == apartado.nombre"
                             ></div>
-                        <div class="dfac" v-html="apartado.svg"></div>
+                        <div svgI class="dfac" v-html="apartado.svg"></div>
                         <span v-if="ui.apartado_selecionado == apartado.nombre">{{ apartado.nombre }}</span>
                     </button>         
                 </div>
             </div>
             <div class="fg1 w20" style="-webkit-app-region: drag;"></div>
             <div class="df aic fs0 co_1 bg_3 a12d pl2">
-                <button type="button" class="a12c pr5" style="width: 25px;" id="cerrar-btn">
-                    <svg class="w15" viewBox="0 0 20 20" fill="currentColor"> <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" /> </svg>
+                <button type="button" class="a12c dfac a12y t01 pr" style="width: 20px;" id="maximizar-btn">
+                    <div class="paa dfac" @click="btn_maximizar"> <div class="w6 h6 br2"  style="border: 1px solid currentColor;"></div> </div>
+            
+                    <div class="pa t20 r-7 bg_4 z6 f9 p5 br3 df gg7 cd e13">
+                        <div class="dfc ais e16b">
+                            <div class="df aic h11">
+                                <svg class="h8 w8 pr" id="svgPos" viewBox="0 0 20 20" fill="currentColor"> <path fill-rule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 002.273 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd" /> </svg>
+                                <span class="bl ml3 mt1">Posición</span>
+                            </div>
+                            <div class="dg bg_3 br3 gg p3 e11 mt2 f7 co_1">
+                                <div>🡤</div>
+                                <div>🡩</div>
+                                <div>🡥</div>
+                                <div>🡠</div>
+                                <div>●</div>
+                                <div>🡢</div>
+                                <div>🡧</div>
+                                <div>🡣</div>
+                                <div>🡮</div>
+                            </div>
+                        </div>
+                        <div class="dfc ais ">
+                            <div class="e16">
+                                <div class="df aic h11">
+                                    <div class="w10 h10 dfac"><svg id="svgTam" class="h9 w9" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" /> </svg> </div>
+                                    <span class="bl ml3 mt1">Tamaño</span>
+                                </div>
+                                <div class="df mt2 ais bg_3 br3 e17 pr3 pl3">
+                                    <div role="button" @click="btn_cambiar_tamaño(1)"class="dfac w20 h20 cp"> <div class="br1 br1 h14 w17 f9 ffm co_1 dfac">1</div> </div>
+                                    <div role="button" @click="btn_cambiar_tamaño(2)"class="dfac w20 h20 cp"> <div class="br1 br1 h14 w17 f9 ffm co_1 dfac">2</div> </div>
+                                    <div role="button" @click="btn_cambiar_tamaño(3)"class="dfac w20 h20 cp"> <div class="br1 br1 h14 w17 f9 ffm co_1 dfac">3</div> </div>
+                                    <div role="button" @click="btn_maximizar" class="dfac w20 h20 cp" title="Maximizar"> <div class="br1 br1 h14 w17 dfac co_1">F</div> </div>
+                                </div>
+                            </div>
+                            <div class="e16c">
+                                <div class="df f9 aic mt3">
+                                    <input class="cp dn e14" type="checkbox" name="" id="chse">
+                                    <label class="cp co_0 df aic" for="chse">
+                                        <div class="df h7 w7 pr bg_3 p3 br3 dfac co_1">
+                                            <div class="pr dfac fg1" id="svgPin">
+                                                <svg class="pr" viewBox="0 0 123.14 123.54"><path fill="currentColor" d="M121.59,36.81,86.3,1.52c-3-3-7.77.09-9.2,2.74-.24.45.19.86-.2,3.91a46.16,46.16,0,0,1-2.72,11.32l-15.7,15.7c-6.26,6.27-15.22,3.48-22.87-.32-1.61-.8-3.68-2.57-5.47-.78l-6.65,6.65a2.5,2.5,0,0,0,0,3.53l55.79,55.78a2.5,2.5,0,0,0,3.53,0l6.64-6.65c1.77-1.77-.49-4.06-1.41-6-3.4-7-6.45-16.42-.78-22.09L103.65,49A84.08,84.08,0,0,1,115,46.38c3.09-.49,3.47-.1,3.91-.39,2.7-1.75,5.7-6.16,2.68-9.18ZM53.86,82.39,41.15,69.69.38,121.25l1.92,1.91L53.86,82.39Z"/></svg>
+                                                <div class="pa h7 t-2 w0 bgcc br1 tr315 e15" style="color: var(--co_mapa_rojo);border: 2px solid var(--bg_secundario)"></div>
+                                            </div>
+                                        </div>
+                                        <span class="bl ml4 mt1">Siempre encima</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </button>
+                <button type="button" class="a12c dfac a12t t01" style="width: 20px;" id="cerrar-btn">
+                    <svg class="w15 pr2" viewBox="0 0 20 20" fill="currentColor"> <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" /> </svg>
                 </button>
             </div>
         </nav>
         <div class="fg1 dfc a05">
-            <div class="a01 dfc pr">
-                <div class="fg1 df bg_3 mt5 ml5 z2 br p5" v-if="ui.apartado_selecionado == 'Estadisticas'">
-                    <div class="dfc fs0">
-                        <div class="df aic gg jcse">
-                            <button type="button" class="co_1"><</button>
-                            <span class="f9">29 de diciembre 2022</span>
-                            <button type="button" class="co_1">></button>
+            <div class="a01 dfc pr fg1">
+
+
+                <div class="fg1 df bg_3 z2 br p5 m7 mt0" v-if="ui.apartado_selecionado == 'Estadisticas'">
+                    <div class="dfc fs0 oh w100p">
+                        <div class="df aic gg mb7 mt4">
+                            <div class="df e09">
+                                <button type="button" @click="btn_est_fechaAnterior">
+                                    <svg class="w15 h15" viewBox="0 0 20 20" fill="currentColor"> <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" /> </svg>
+                                </button>
+                                <input type="date" @change="evt_est_cambiarFecha" ref="st_inp_date">
+                                <button type="button" @click="btn_est_fechaSiguiente">
+                                    <svg class="w15 h15" viewBox="0 0 20 20" fill="currentColor"> <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" /> </svg>
+                                </button>
+                                <div class="ml15 dfc mb5">
+                                    <div class="f10 df tas aic">
+                                        <span>Limite maximo</span>
+                                        <div class="df bg_1 p3 ml5 f8 br3">
+                                            <input class="bgn bn co_1 p0 w25" min="0" max="100" v-model="estadisticas.ui.limite_maximo" type="number">
+                                            <span>%</span>
+                                        </div>
+                                    </div>
+                                    <div class="df aic mt5">
+                                        <input 
+                                            v-model="estadisticas.ui.limite_maximo"
+                                            type="range" min="0" max="100" step="10"
+                                        >    
+                                    </div>
+                                </div>
+                                <div class="ml15 dfc mb5">
+                                    <div class="f10 df tas aic">
+                                        <span>Ancho barras</span>
+                                        <div class="df bg_1 p3 ml5 f8 br3">
+                                            <input class="bgn bn co_1 p0 w25" min="1" v-model="estadisticas.ui.ancho_barras" type="number">
+                                            <span class="ml3">PX</span>
+                                        </div>
+                                    </div>
+                                    <div class="df aic mt5">
+                                        <input 
+                                            v-model="estadisticas.ui.ancho_barras"
+                                            type="range" min="1" max="5" step="1"
+                                        >    
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="df mt5">
-                            <div></div>
-                            <div><canvas class="bg_2 br" id="tutorial" width="170" height="95"></canvas> </div>
+                        <div class="dfc mt5 bg_4 br_3 oh pr gg e02">
+                            <div 
+                                class="df" 
+                                v-for="(dia, k) in estadisticas.dias"
+                                :style="{height: estadisticas.ui.alto_graf_dia + 'px'}"
+                            >
+                 
+
+                                <div class="dfc pr4 e04 pb5 pl5 pt15 ps l0 z2 bg_4">
+                                    <template v-for="(escala, index) in [0,10,20,30,40,50,60,70,80]">
+                                        <span class="f6 h10 oh">{{ escala }}</span>
+                                    </template>
+                                </div>
+                                <div class="df pb3 df z1 pr">
+                                    <template v-for="(escala, index) in [0,10,20,30,40,50,60,70,80]">
+                                        <div class="pa l10 r0 h10 b15" :style="{height: (10*index) + 'px'}" style="bottom: 9px; border-top: 1px solid #80808014;"></div>
+                                    </template>
+                                    <div class="e01 dfc pr" v-for="(hora, key) in dia.puntos">
+                                        <div class="h15">
+                                            <div class="t3 f7 tac mt5">{{ fn_format24h_to_12h(key) }}</div>
+                                        </div>
+                                        <div class="e01q df aife oh">
+                                            <template v-for="minuto in hora">
+                                                <div v-if="minuto[0] == -1"  :style="{width: estadisticas.ui.ancho_barras + 'px'}" class="h1 e03a"></div>
+                                                <div v-if="minuto[0] == 0" :style="{width: estadisticas.ui.ancho_barras + 'px'}"  class="h1 e03a"></div>
+                                                <div v-else class=" e03" :style="{width: estadisticas.ui.ancho_barras + 'px', height: minuto[0], backgroundColor: colorParaDrops(minuto[0])}"></div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="fg1">
                     </div>
                 </div>
+
+
+
                 <div class="fg1 df" v-else-if="ui.apartado_selecionado == 'Monitor'">
-                    <div class="dfc f7 ffm jcsb tae pt2 pl6 pr3 a22 pr" style="border-top-left-radius: 0px;">
-                        <div class="pa t-20 r0 l0 bg_1 z1 h20 dfac tac pl3 a23b">(ms)</div>
-                        <div v-for="(punto, key) in calcular_escala_ejeY()" :class="{'co_2': !esPar(key)}">{{ punto }}</div>
+                    <div class="dfc f7 ffm jcsb tae pb10 pt2 pl6 pr3 a22 pr" style="border-top-left-radius: 0px;">
+                        <div class="pa t-20 r0 l0 bg_1 z1 h20 dfac tac pl3 a23b">[ms]</div>
+                        <div v-for="(punto, key) in calcular_escala_ejeY()" class="e05" :class="{'co_2': !esPar(key)}">
+                            <span v-if="punto < 1000">{{ punto }}</span>
+                            <span v-else>{{ punto / 1000 }}K</span>
+                        </div>
                     </div>
-                    <div class="fg1 df aife ml3 pr ns bg_3 br oh mt4 z1">
-                        <div class="pa r0 t0 df p5 z1 f8 ffm aic z2 br bbrr0 btlr0" style="backdrop-filter: blur(6px); background-color: #20252cba;">
-                            <div class="df">
-                                <table class="f7 tae co_4 pr5" style="border-spacing: 0px;">
-                                    <tbody class="f6 ffm">
-                                        <!-- <tr class="df jce"> <td class="df aic">IP</td> <td class="ml2">92.223.56.18</td> </tr> -->
-                                        <tr class="df jce f7"> 
-                                            <td class="df aic"> {{ monitor.grafico.ms.perdidas[1] }}% </td> 
-                                            <td class="ml2" :style="{color: colorParaDrops(monitor.grafico.ms.perdidas[1])}">Packet Loss ●</td>
-                                        </tr>
-                                        <tr class="df jce f7">
-                                            <td>{{ monitor.grafico.ms.media }}ms</td>
-                                            <td class="ml2" :style="{color: colorParaMS(monitor.grafico.ms.media)}">Media ●</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <table class="f7 tae co_1 mr7" style="border-spacing: 0px;">
-                                    <tbody class="f7">
-                                        <tr> <td>{{ monitor.grafico.ms.maximo }}ms</td> <td :style="{color: colorParaMS(monitor.grafico.ms.maximo)}">MAX ●</td> </tr>
-                                        <tr> <td>{{ monitor.grafico.ms.minimo }}ms</td> <td :style="{color: colorParaMS(monitor.grafico.ms.minimo)}">MIN ●</td> </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-    
-                            <div class="dfc h23 pr">
-                                <div class="dfrw gg1 w40 oh br1"> 
-                                    <div v-for="ms in sortedArray" :style="{backgroundColor: color(ms)}" :class="{'br50': ms == 999}" class="w3 h3"></div>
+                    <div class="fg1 df aife pr ns bg_3 br z1 bblr0 bbrr0 btrr0 ml3 oh e10">
+                      
+                        <div class="pa e06 r0 t0 df z1 f8 ffm z3 jcsb p3 pr5 pb5 pl7 aic" style="backdrop-filter: blur(6px); background-color: rgb(32 37 44 / 46%)">
+                            <div>
+                                <div class="df mt2">
+                                    <div class="df z5">
+                      
+                                    </div>
+            
+                                    <!-- <div class="dfc h23 pr ml5">
+                                        <div class="dfrw w30">
+                                            <div class="df">
+                                                <button class="e08" type="button" @click="monitor.stop_update = ! monitor.stop_update"
+                                                    :title="monitor.stop_update ? 'Reanudar registro del estado' : 'Detener el registro del estado'">
+                                                    <svg v-if="monitor.stop_update" class="w8 h8" viewBox="0 0 20 20" fill="currentColor"> <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" /> </svg>
+                                                    <svg v-else class="w8 h8" viewBox="0 0 20 20" fill="currentColor"> <path d="M5.75 3a.75.75 0 00-.75.75v12.5c0 .414.336.75.75.75h1.5a.75.75 0 00.75-.75V3.75A.75.75 0 007.25 3h-1.5zM12.75 3a.75.75 0 00-.75.75v12.5c0 .414.336.75.75.75h1.5a.75.75 0 00.75-.75V3.75a.75.75 0 00-.75-.75h-1.5z" /> </svg>
+                                                </button>
+                                            </div>
+                                            <div class="df">
+                                                <button class="e08" type="button" @click="monitor.sonidos = ! monitor.sonidos" type="button"
+                                                    :title="monitor.sonidos ? 'Reproducir sonidos en dependencia del estado' : 'Dejar de reproducir sonidos'">
+                                                    <svg v-if="monitor.sonidos" class="w8 h8" viewBox="0 0 20 20" fill="currentColor"> <path d="M9.547 3.062A.75.75 0 0110 3.75v12.5a.75.75 0 01-1.264.546L4.703 13H3.167a.75.75 0 01-.7-.48A6.985 6.985 0 012 10c0-.887.165-1.737.468-2.52a.75.75 0 01.7-.48h1.535l4.033-3.796a.75.75 0 01.811-.142zM13.28 7.22a.75.75 0 10-1.06 1.06L13.94 10l-1.72 1.72a.75.75 0 001.06 1.06L15 11.06l1.72 1.72a.75.75 0 101.06-1.06L16.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L15 8.94l-1.72-1.72z" /> </svg>
+                                                    <svg v-else class="w8 h8"  viewBox="0 0 20 20" fill="currentColor"> <path d="M10 3.75a.75.75 0 00-1.264-.546L4.703 7H3.167a.75.75 0 00-.7.48A6.985 6.985 0 002 10c0 .887.165 1.737.468 2.52.111.29.39.48.7.48h1.535l4.033 3.796A.75.75 0 0010 16.25V3.75zM15.95 5.05a.75.75 0 00-1.06 1.061 5.5 5.5 0 010 7.778.75.75 0 001.06 1.06 7 7 0 000-9.899z" /> <path d="M13.829 7.172a.75.75 0 00-1.061 1.06 2.5 2.5 0 010 3.536.75.75 0 001.06 1.06 4 4 0 000-5.656z" /> </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div> -->
                                 </div>
-                                <div class="pa b-10 l0 r0 tac f6">{{ getFecha() }}</div>
+                            </div>
+                            <div class="df gg">
+                                <div class="df e07 mr5" title="Tiempo de muestra, define cuantos segundos se muestra en el grafico (Por defecto 60s cada barra es 1s)">
+                                    <button type="button" 
+                                        :class="{'bg_5': monitor.muestra_largo == 300 }"
+                                        @click="monitor_cambiar_size_muestra(300)"
+                                        class="f5">5 m</button>
+                                    <button type="button" 
+                                        :class="{'bg_5': monitor.muestra_largo == 60 }" 
+                                        @click="monitor_cambiar_size_muestra(60)"
+                                        class="f5">1 m</button>
+                                </div>
+
+                                <div class="df">
+                                    <button class="e08" type="button" @click="monitor.stop_update = ! monitor.stop_update"
+                                        :title="monitor.stop_update ? 'Reanudar registro del estado' : 'Detener el registro del estado'">
+                                        <svg v-if="monitor.stop_update" class="w8 h8" viewBox="0 0 20 20" fill="currentColor"> <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" /> </svg>
+                                        <svg v-else class="w8 h8" viewBox="0 0 20 20" fill="currentColor"> <path d="M5.75 3a.75.75 0 00-.75.75v12.5c0 .414.336.75.75.75h1.5a.75.75 0 00.75-.75V3.75A.75.75 0 007.25 3h-1.5zM12.75 3a.75.75 0 00-.75.75v12.5c0 .414.336.75.75.75h1.5a.75.75 0 00.75-.75V3.75a.75.75 0 00-.75-.75h-1.5z" /> </svg>
+                                    </button>
+                                </div>
                             </div>
                      
                         </div>
                         <div class="paa dfac z4 f15 co_2" v-show="monitor.grafico.ejeX.coordenadas.length == 0">Esperando datos...</div>
-                        <div class="l1 r0 pa z2 a07 t05 b0 h1 df aifs f7 ffm lh12" :style="{height: monitor.grafico.ejeY.altura_minima_registrada - 1}">
-                            <span class="m1 ml5 co_2">{{ monitor.grafico.ms.minimo }}</span>
-                        </div>
-                        <div class="l1 r0 pa z2 a07b t05 t0 h1 df aife f7 ffm lh12" :style="{height: (120 - monitor.grafico.ejeY.altura_maxima_registrada) - 1}">
-                            <span class="m1 ml5 co_2">{{ monitor.grafico.ms.maximo }}</span>
-                        </div>
-                        <div class="paa a02 f9 oh z1">
+                        <!-- <div class="l0 r0 pa z2 a07 t05 b0 h1 df aifs f7 ffm lh12 pb12" :style="{ height: monitor.grafico.ejeY.indicadores.min + 'px' }"> </div> -->
+                        <!-- <div class="l0 r0 pa z2 a07b t05 t0 h1 df aife f7 ffm lh12" :style="{ height: monitor.grafico.ejeY.indicadores.max + 'px' }"> </div> -->
+                        <div class="paa a02 f9 z1 df jcs mb14 ml3 mr5">
+                            <!-- <div class="pa t0 mt5 z3 w25 h0" v-if="monitor.grafico.ms.media > 300 || monitor.grafico.ms.perdidas[1] > 15" title="Easter egg para los Cubanos">
+                                <svg class="a07u" viewBox="0 0 195 202"> <g fill="rgb(196 180 0)"> <path d="M 71.4,50.6 103.5,56.8 86.4,74.5 133.8,123.1 c 14,-11.3 20.3,-54 -32.7,-90 52.5,4.5 82.8,68.3 49,106 l 20.7,20.6 c 6.8,6.4 -6.4,18.8 -12.7,12.4 l -21.6,-21.4 c -21.2,15.3 -58.3,10.1 -70.6,-14.2 l -3,2.8 3.7,4 c 3.2,3.3 -3.3,8.1 -5.6,5.8 l -3.6,-3.9 c -7,11.6 -10.1,14 -15.8,19.8 -8.7,8.9 -20.3,-5.4 -12.6,-13.1 5.9,-5.9 12.3,-11.6 19.5,-15.2 l -3.5,-3.9 c -3.6,-4.3 2.9,-9 6.3,-5.2 l 2.8,3.6 9.7,-9.4 7.5,-0 c 7.8,12.1 27.6,25.1 49.1,12.8 L 73.6,87.8 60,102 40.9,82.1 71.5,50.6 z"/> <polygon points="38.5,13.5 52.5,56,16,30 61,30 24.5,56"/> </g> </svg>
+                            </div> -->
+
                             <template v-for="(punto, key) in monitor.grafico.ejeX.coordenadas">
-                                <!--Perdida--><div v-if="punto[0] == -1" :key="'d'+key" class="a02b"></div>
-                                <!--Desconexion--><div v-else-if="punto[0] == 0" :key="'f'+key" class="a02e"></div>
-                                <!--Barra--><div v-else-if="punto[0] > 0" class="a02c" :key="'t'+key"
+                                <div v-if="punto[0] == -1" class="a02b pr"></div>
+                                <div v-else-if="punto[0] == -2" class="a02e"></div>
+                                <div v-else-if="punto[0] > 0" class="a02c"
                                     :style="{height: punto[1], backgroundColor: color(punto[0])}"></div>
+                                <div v-else class="a02e a02e2"></div>
                             </template>
+                        </div>
+
+                        <div class="pa b0 r0 l0 h14 bg_1 df pr8 pl5 z3">
+                            <div class="df fg1 f7 aic gg7 ffm pb2">
+                                <div class="df aic gg3" title="Ip objetivo (Es la IP a la que se hace el ping)">
+                                    <svg class="w7 h7 pb1" viewBox="0 0 20 20" fill="currentColor"> <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm14 1a1 1 0 11-2 0 1 1 0 012 0zM2 13a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2zm14 1a1 1 0 11-2 0 1 1 0 012 0z" clip-rule="evenodd" /> </svg>
+                                    <span>{{ monitor.ip_objetivo }}</span>
+                                </div>
+                                <div class="df" title="Porcentaje de paquetes perdidos (Packet loss)"> 
+                                    <div class="df aic">{{ monitor.grafico.ms.perdidas[1] }}% </div> 
+                                    <div class="ml3" :style="{color: colorParaDrops(monitor.grafico.ms.perdidas[1])}">Perdidos</div>
+                                </div>
+                                <div class="df" title="Media de la latencia">
+                                    <div>{{ monitor.grafico.ms.media }}ms</div>
+                                    <div class="ml3" :style="{color: colorParaMS(monitor.grafico.ms.media)}">Media</div>
+                                </div>
+                            </div>
+                            <div class="df aic fs0">
+                                <div class="df tac f7 z3 df aic gg4 pb3" title="Hora local">
+                                    <span class="pt1">{{ getFecha() }}</span>
+                                    <svg class="h7 w7" fill="none" viewBox="0 0 24 24" stroke-width="2px" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /> </svg>
+                                </div>
+                                <div class="dfac pb3 ml5" title="Indica si se esta actualizando el grafico">
+                                    <div class="h5 w5 br2 t04 o05" :style="{ backgroundColor: monitor.latidos ? 'var(--co_txt_verde)' : 'var(--bg_cuarto)' }"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div v-else>
-                    <div class="paa bg_3 p10 ml23 z2 mt5 f12 co_2">Proximamente...</div>
+                    <div class="paa bg_3 p10 ml23 z2 f12 co_2">Proximamente...</div>
                 </div>
             </div>
         </div>
