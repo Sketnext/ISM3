@@ -152,6 +152,8 @@ const app = Vue.createApp({
   mounted: function(){
     ipc.send('mw_size?');
     this.cambiarApartado('Monitor');
+    // this.cambiarApartado('Configuración');
+    // this.cambiarApartado('Estadisticas');
     // this.actualizar_monitor();
     
   },
@@ -198,7 +200,7 @@ const app = Vue.createApp({
       if (ping.muestra == undefined) return;
       ping.muestra.forEach(ms => {
         if (ms > this.monitor.grafico.ejeY.escala[1]) ms = this.monitor.grafico.ejeY.escala[1];
-        let altura = ((this.ui.mw.alto - 20 - ESPACIO_ABAJO) * ((ms / this.monitor.grafico.ejeY.escala[1]) * 100)) / 100;
+        let altura = ((this.ui.mw.alto - 30 - ESPACIO_ABAJO) * ((ms / this.monitor.grafico.ejeY.escala[1]) * 100)) / 100;
         
         if (datos.altura_maxima_registrada < altura) datos.altura_maxima_registrada = altura;
         if (datos.altura_minima_registrada > altura && altura > 0) datos.altura_minima_registrada = altura;
@@ -276,14 +278,6 @@ const app = Vue.createApp({
       else return "var(--co_txt_rojo)";
     },
 
-    color: function(latencia){
-      if (latencia == 0 ) return 'var(--co_gaf_drop)';
-      else if (latencia < 150) return 'var(--co_gaf_verde)';
-      else if(latencia >= 150 && latencia <= 300) return 'var(--co_gaf_amarillo)';
-      else if(latencia > 300) return 'var(--co_gaf_rojo)';
-      else return 'var(--co_gaf_drop)';
-    },
-
     color2: function(latencia){
       if (latencia == '-'){
         return '#000000';
@@ -340,6 +334,13 @@ const app = Vue.createApp({
           case 0: return 'co_t_n'; break;
         }
       }
+    },
+    punto_monior_color: function(latencia){
+      if (latencia == 0 ) return 'pm_1';
+      else if (latencia < 150) return 'pm_v';
+      else if(latencia >= 150 && latencia <= 300) return 'pm_a';
+      else if(latencia > 300) return 'pm_r';
+      else return null;
     },
     fn_format24h_to_12h: function (horas) {
       return `${(horas % 12) || 12} ${horas >= 12 ? 'PM' : 'AM'}`;

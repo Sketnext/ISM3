@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- <meta http-equiv="Content-Security-Policy" content="script-src 'self';"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ventana principal</title>
+
+    <link rel="stylesheet" href="../css/plot.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/mw.css">
+    <link rel="stylesheet" href="../css/sw.css">
+    <link rel="stylesheet" href="../css/rangeSlider.css">
+
+    <script defer src="../js/vue.global.js"></script>
+    <script defer src="../js/mw.js"></script>
+    <script defer src="../js/lib/rangeSlider.js"></script>
+    <script defer src="../js/lib/html2canvas.min.js"></script>
+</head>
+<body class="paa df">
+    <main class="dfc ns fg1" id="mw">
+        <nav class="fs0 df pr jcsb mb3">
+            <div class="fs0 df">
+                <div class="dfac w23 h20 pr nav_cont_tray">
+                    <div class="paa z2" style="-webkit-app-region: drag;"></div>
+                    <img class="h15 w15 pt5 z1 pr t1" tray :src="'../tray/' + ui.iconoTray" alt="Icono Tray">
+                </div>
+                <div class="df aist mt4 gg4 z1 h20 nav_cont_botones_menu">
+                    <button 
+                        v-for="(apartado, key) in ui.apartados" 
+                        :class="{'bg_3': ui.apartado_selecionado == apartado.nombre}"
+                        class="a12b br df aic gg3 bg_2 bblr0 bbrr0 pr nav_botones_menu"
+                        @click="cambiarApartado(apartado.nombre)"
+                        type="button" 
+                        >
+                        <div class="bg_2 pa b-5 l0 h10 w5" v-if="key == 0"></div>
+                        <div 
+                            class="bg_3 pa a06q"
+                            :class="{'a06q2': key == 0}"
+                            v-if="ui.apartado_selecionado == apartado.nombre"
+                            ></div>
+                        <div svgI class="dfac" v-html="apartado.svg"></div>
+                        <span v-if="ui.apartado_selecionado == apartado.nombre">{{ apartado.nombre }}</span>
+                    </button>         
+                </div>
+            </div>
+            <div class="fg1 w20 a25" style="-webkit-app-region: drag;"></div>
+            <!-- <div class="a23 w0" ref="separadorDrag"></div> -->
+            <div class="df aic fs0 co_1 bg_3 a12d pl2 pr oh">
+                <!-- <button 
+                    @mouseover="this.$refs.separadorDrag.style.display='flex'" 
+                    @mouseout="this.$refs.separadorDrag.style.display='none'" 
+                    class="a12c dfac a12y t01 pr"
+                    style="width: 20px;"
+                    id="maximizar-btn"
+                    type="button" 
+                    >
+                    <div class="paa dfac" @click="btn_maximizar"> <div class="w6 h6 br2"  style="border: 1px solid currentColor;"></div> </div>
+                    <div class="pa a24"></div>
+                    <div class="pa t20 r-7 bg_4 z6 f9 p5 br3 df gg7 cd e13">
+                        <div class="dfc ais e16b">
+                            <div class="df aic h11">
+                                <svg class="h8 w8 pr" id="svgPos" viewBox="0 0 20 20" fill="currentColor"> <path fill-rule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 002.273 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd" /> </svg>
+                                <span class="bl ml3 mt1">Posición</span>
+                            </div>
+                            <div class="dg bg_3 br3 gg p3 e11 mt2 f7 co_1">
+                                <div>🡤</div><div>🡩</div><div>🡥</div>
+                                <div>🡠</div><div>●</div><div>🡢</div>
+                                <div>🡧</div><div>🡣</div><div>🡮</div>
+                            </div>
+                        </div>
+                        <div class="dfc ais">
+                            <div class="e16">
+                                <div class="df aic h11">
+                                    <div class="w10 h10 dfac"><svg id="svgTam" class="h9 w9" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" /> </svg> </div>
+                                    <span class="bl ml3 mt1">Tamaño</span>
+                                </div>
+                                <div class="df mt2 ais bg_3 br3 e17 pr3 pl3">
+                                    <div role="button" @click="btn_cambiar_tamaño(1)"class="dfac w20 h20 cp"> <div class="br1 br1 h14 w17 f9 ffm co_1 dfac">1</div> </div>
+                                    <div role="button" @click="btn_cambiar_tamaño(2)"class="dfac w20 h20 cp"> <div class="br1 br1 h14 w17 f9 ffm co_1 dfac">2</div> </div>
+                                    <div role="button" @click="btn_cambiar_tamaño(3)"class="dfac w20 h20 cp"> <div class="br1 br1 h14 w17 f9 ffm co_1 dfac">3</div> </div>
+                                    <div role="button" @click="btn_maximizar" class="dfac w20 h20 cp" title="Maximizar"> <div class="br1 br1 h14 w17 dfac co_1">F</div> </div>
+                                </div>
+                            </div>
+                            <div class="e16c">
+                                <div class="df f9 aic mt3">
+                                    <input class="cp dn e14" type="checkbox" name="" id="chse">
+                                    <label class="cp co_0 df aic" for="chse">
+                                        <div class="df h7 w7 pr bg_3 p3 br3 dfac co_1">
+                                            <div class="pr dfac fg1" id="svgPin">
+                                                <svg class="pr" viewBox="0 0 123.14 123.54"><path fill="currentColor" d="M121.59,36.81,86.3,1.52c-3-3-7.77.09-9.2,2.74-.24.45.19.86-.2,3.91a46.16,46.16,0,0,1-2.72,11.32l-15.7,15.7c-6.26,6.27-15.22,3.48-22.87-.32-1.61-.8-3.68-2.57-5.47-.78l-6.65,6.65a2.5,2.5,0,0,0,0,3.53l55.79,55.78a2.5,2.5,0,0,0,3.53,0l6.64-6.65c1.77-1.77-.49-4.06-1.41-6-3.4-7-6.45-16.42-.78-22.09L103.65,49A84.08,84.08,0,0,1,115,46.38c3.09-.49,3.47-.1,3.91-.39,2.7-1.75,5.7-6.16,2.68-9.18ZM53.86,82.39,41.15,69.69.38,121.25l1.92,1.91L53.86,82.39Z"/></svg>
+                                                <div class="pa h7 t-2 w1 bgcc br1 tr315 e15" style="color: var(--co_mapa_rojo);border: 2px solid var(--bg_terciario)"></div>
+                                            </div>
+                                        </div>
+                                        <span class="bl ml4 mt1">Siempre encima</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </button> -->
+                <button type="button" class="a12c dfac a12t t01" style="width: 20px;" id="cerrar-btn" @click="btn_minimizar">
+                    <svg class="w15 pr2" viewBox="0 0 20 20" fill="currentColor"> <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" /> </svg>
+                </button>
+            </div>
+        </nav>
+        <div class="fg1 dfc a05">
+            <div class="a01 dfc pr fg1">
+
+                <!--+--------------------------+
+                    |  Apartado Configuración  |
+                    +--------------------------+-->
+
+                <div class="paa df bg_3" v-if="ui.apartado_selecionado == 'Configuración-dev'">
+                    <div class="bg_1 fs0 w23 dfc aic gg5 pt5">
+                        <div class="h5 df jcc">
+                            <div class="w13 br5 bg_2"></div>
+                        </div>
+                        <div class="h14 w14 br3 p1 dfac cp" title="Tu información"> <svg class="w13 h13" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"> <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-5.5-2.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM10 12a5.99 5.99 0 00-4.793 2.39A6.483 6.483 0 0010 16.5a6.483 6.483 0 004.793-2.11A5.99 5.99 0 0010 12z" clip-rule="evenodd" /> </svg> </div>
+                        <div class="h14 w14 br3 p1 dfac cp" title="Apariencia"> <svg class="w13 h13" viewBox="0 0 20 20" fill="currentColor"> <path fill-rule="evenodd" d="M3.5 2A1.5 1.5 0 002 3.5V15a3 3 0 106 0V3.5A1.5 1.5 0 006.5 2h-3zm11.753 6.99L9.5 14.743V6.257l1.51-1.51a1.5 1.5 0 012.122 0l2.121 2.121a1.5 1.5 0 010 2.122zM8.364 18H16.5a1.5 1.5 0 001.5-1.5v-3a1.5 1.5 0 00-1.5-1.5h-2.136l-6 6zM5 16a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /> </svg> </div>
+                        <div class="h14 w14 br3 p1 dfac cp" title="Avanzado"> <svg class="w13 h13" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"> <path fill-rule="evenodd" d="M4.25 2A2.25 2.25 0 002 4.25v11.5A2.25 2.25 0 004.25 18h11.5A2.25 2.25 0 0018 15.75V4.25A2.25 2.25 0 0015.75 2H4.25zm4.03 6.28a.75.75 0 00-1.06-1.06L4.97 9.47a.75.75 0 000 1.06l2.25 2.25a.75.75 0 001.06-1.06L6.56 10l1.72-1.72zm4.5-1.06a.75.75 0 10-1.06 1.06L13.44 10l-1.72 1.72a.75.75 0 101.06 1.06l2.25-2.25a.75.75 0 000-1.06l-2.25-2.25z" clip-rule="evenodd" /> </svg> </div>
+                    </div>
+                    <div class="pl10 fg1 co_1 e20 pr20 e21">
+                        <div>
+                            <span class="fwb">Apariencia</span>
+                            <div class="mt5">
+                                <div class="df">
+                                    <span class="f14 fg1">Temas</span>
+                                </div>
+                                <div class="dfc gg">
+                                    <div class="df"></div>
+                                    <div class="df">
+                                        <div></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div>
+                            <span class="fwb">Gestion de datos</span>
+                            <div class="mt5">
+                                <div class="df">
+                                    <span class="f14 fg1">Almacenar estadisticas del estado del monitor</span>
+                                    <input type="checkbox">
+                                </div>
+                                <span class="co_2 f10 mt7 bl lh15">A cada minuto se guarda el estado general de tu conexion en una base de datos local, estos datos luego son utilizados en la seccion "Estadisticas".</span>
+                            </div>
+
+                            <div class="mt5">
+                                <div class="df">
+                                    <span class="f14 fg1">Compartir el estado de tu conexion de forma anonima</span>
+                                    <button type="button" class="f11 lh0">Configurar</button>
+                                    <input type="checkbox">
+                                </div>
+                                <span class="co_2 f10 mt7 bl lh15">Envia de forma anonima el estado de tu conexion a nuestro servidor el cual usa estos datos para hacer posible el funcionamiento de la seccion "Mapa", si desactiva esta opcion no podra hacer uso de dicha seccion.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--+--------------------------+
+                    |  Apartado Monitor        |
+                    +--------------------------+-->
+
+                <div class="fg1 df bg_1" v-else-if="ui.apartado_selecionado == 'Monitor'" id="screenshotRef">
+                    <div class="dfc f7 ffm jcsb tae pb10 pt2 pl6 pr3 a22 pr" style="border-top-left-radius: 0px;">
+                        <div class="pa t-20 r0 l0 bg_1 z1 h20 dfac tac pl3 a23b">[ms]</div>
+                        <div v-for="(punto, key) in m_calcularEsacalaEjeY()" class="e05" :class="{'co_2': !(key % 2) == 0}">
+                            <span v-if="punto < 1000">{{ punto }}</span>
+                            <span v-else>{{ punto / 1000 }}K</span>
+                        </div>
+                    </div>
+                    <div class="fg1 df aife pr ns bg_3 br z1 bblr0 bbrr0 btrr0 ml3 oh e10">
+                        <!-- <div class="paa dfac z4" style="background-color: rgb(255 255 255 / 5%);"></div> -->
+                        <div class="pa r0 l0 t0 dfc z3">
+                            <div class="e06 df f8 ffm jcsb p3 pr3 pb3 aic">
+                                <div class="df co_1 pl3">
+                                    <div class="df aic gg3 cp a26 h15" title="IP objetivo (Es la IPv4 a la que se hace el ping)">
+                                        <svg class="w7 h7 pb1" viewBox="0 0 20 20" fill="currentColor"> <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm14 1a1 1 0 11-2 0 1 1 0 012 0zM2 13a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2zm14 1a1 1 0 11-2 0 1 1 0 012 0z" clip-rule="evenodd" /> </svg>
+                                        <span class="bl">{{ monitor.ip_objetivo }}</span>
+                                        <!-- <span class="bl">255.255.255.255</span> -->
+                                    </div>
+                                </div>
+                                <div class="df gg pr3">
+                                    <div class="df gg1">
+                                        
+                                        <button class="e08" ref="btnSound" type="button" @click="this.conf.monitor.audio.activado = ! this.conf.monitor.audio.activado" type="button"
+                                            :title="!this.conf.monitor.audio.activado ? 'Reproducir sonidos en dependencia del estado' : 'Dejar de reproducir sonidos'">
+                                            <svg v-if="!this.conf.monitor.audio.activado" class="w9 h9" viewBox="0 0 20 20" fill="currentColor"> <path d="M9.547 3.062A.75.75 0 0110 3.75v12.5a.75.75 0 01-1.264.546L4.703 13H3.167a.75.75 0 01-.7-.48A6.985 6.985 0 012 10c0-.887.165-1.737.468-2.52a.75.75 0 01.7-.48h1.535l4.033-3.796a.75.75 0 01.811-.142zM13.28 7.22a.75.75 0 10-1.06 1.06L13.94 10l-1.72 1.72a.75.75 0 001.06 1.06L15 11.06l1.72 1.72a.75.75 0 101.06-1.06L16.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L15 8.94l-1.72-1.72z" /> </svg>
+                                            <svg v-else class="w9 h9"  viewBox="0 0 20 20" fill="currentColor"> <path d="M10 3.75a.75.75 0 00-1.264-.546L4.703 7H3.167a.75.75 0 00-.7.48A6.985 6.985 0 002 10c0 .887.165 1.737.468 2.52.111.29.39.48.7.48h1.535l4.033 3.796A.75.75 0 0010 16.25V3.75zM15.95 5.05a.75.75 0 00-1.06 1.061 5.5 5.5 0 010 7.778.75.75 0 001.06 1.06 7 7 0 000-9.899z" /> <path d="M13.829 7.172a.75.75 0 00-1.061 1.06 2.5 2.5 0 010 3.536.75.75 0 001.06 1.06 4 4 0 000-5.656z" /> </svg>
+                                        </button>
+
+                                        <button class="e08" type="button" @click="monitor.stop_update = ! monitor.stop_update"
+                                            :title="monitor.stop_update ? 'Reanudar la actualización del monitor' : 'Detener la actualización del monitor'">
+                                            <svg v-if="monitor.stop_update" class="w8 h8" viewBox="0 0 20 20" fill="currentColor"> <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" /> </svg>
+                                            <svg v-else class="w8 h8" viewBox="0 0 20 20" fill="currentColor"> <path d="M5.75 3a.75.75 0 00-.75.75v12.5c0 .414.336.75.75.75h1.5a.75.75 0 00.75-.75V3.75A.75.75 0 007.25 3h-1.5zM12.75 3a.75.75 0 00-.75.75v12.5c0 .414.336.75.75.75h1.5a.75.75 0 00.75-.75V3.75a.75.75 0 00-.75-.75h-1.5z" /> </svg>
+                                        </button>
+
+                                        <button class="e08 e08_sh" ref="btnIMGtoClip" type="button" @click="m_screen2clipboard" type="button"
+                                            title="Hacer captura al grafico y copiarla en el portapapeles">
+                                            <svg class="w9 h9" viewBox="0 0 20 20" fill="currentColor"> <path fill-rule="evenodd" d="M1 8a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 018.07 3h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0016.07 6H17a2 2 0 012 2v7a2 2 0 01-2 2H3a2 2 0 01-2-2V8zm13.5 3a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM10 14a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" /> </svg>
+                                        </button>
+                                    </div>
+
+                                    <div class="df e07 mr2 aic" title="Tiempo de muestra, define cuantos segundos se muestran en la grafica.">
+                                        <label class="pr a29">
+                                            <select @change="m_cambiarTamañoMuestra" class="a27 a28 cp ib h15">
+                                                <option value="18">18 seg</option>
+                                                <option value="30">30 seg</option>
+                                                <option value="60" selected>1 min</option>
+                                                <option value="120">2 min</option>
+                                                <option value="180">3 min</option>
+                                                <option value="240">4 min</option>
+                                                <option value="300">5 min</option>
+                                            </select>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="df ml7">
+                                <span class="f7 ffm lh11">↑ {{ monitor.grafico.tx }}   ↓ {{ monitor.grafico.rx }}</span>
+                            </div>
+                        </div>
+
+                        <!-- <div class="paa dfac z4 f15 co_2 e19 bg_3" v-show="monitor.grafico.ejeX.coordenadas.length == 0">
+                            <div class="dfc pl7 pr7 gg pb5">
+                                <span class="f12 co_1">Esperando datos 📻</span>
+                                <span class="f9 lh12 co_2b">Este aviso debería desaparecer en 1s, si no desaparece algo inesperado ha ocurrido.</span>
+                            </div>
+                        </div> -->
+                        <!-- <div class="l0 r0 pa z2 a07 t05 b0 h1 df aifs f7 ffm lh12 pb12" :style="{ height: monitor.grafico.ejeY.indicadores.min + 'px' }"> </div> -->
+                        <!-- <div class="l0 r0 pa z2 a07b t05 t0 h1 df aife f7 ffm lh12" :style="{ height: monitor.grafico.ejeY.indicadores.max + 'px' }"> </div> -->
+                        <div class="paa a02 f9 z1 df jcs mb14 ml3 mr5">
+
+                            <div class="pa t0 mt5 z3 w25 h0" v-if="monitor.grafico.ms.media > 300 || monitor.grafico.ms.perdidas[1] > 15" title="Easter egg para los Cubanos">
+                                <svg class="a07u" viewBox="0 0 195 202"> <g fill="rgb(196 180 0)"> <path d="M 71.4,50.6 103.5,56.8 86.4,74.5 133.8,123.1 c 14,-11.3 20.3,-54 -32.7,-90 52.5,4.5 82.8,68.3 49,106 l 20.7,20.6 c 6.8,6.4 -6.4,18.8 -12.7,12.4 l -21.6,-21.4 c -21.2,15.3 -58.3,10.1 -70.6,-14.2 l -3,2.8 3.7,4 c 3.2,3.3 -3.3,8.1 -5.6,5.8 l -3.6,-3.9 c -7,11.6 -10.1,14 -15.8,19.8 -8.7,8.9 -20.3,-5.4 -12.6,-13.1 5.9,-5.9 12.3,-11.6 19.5,-15.2 l -3.5,-3.9 c -3.6,-4.3 2.9,-9 6.3,-5.2 l 2.8,3.6 9.7,-9.4 7.5,-0 c 7.8,12.1 27.6,25.1 49.1,12.8 L 73.6,87.8 60,102 40.9,82.1 71.5,50.6 z"/> <polygon points="38.5,13.5 52.5,56,16,30 61,30 24.5,56"/> </g> </svg>
+                            </div>
+
+                            <template v-for="(punto, key) in monitor.grafico.ejeX.coordenadas">
+                                <div v-if="punto[0] == -1"      class="punto_monitor pm_1"></div>
+                                <div v-else-if="punto[0] == -2" class="punto_monitor pm_2"></div>
+                                <div v-else-if="punto[0] > 0"   
+                                    class="punto_monitor"
+                                    :class="m_colores('pt', punto[0])"
+                                    :style="{height: punto[1] + 'px'}"
+                                    ></div>
+                                <div v-else class="punto_monitor"></div>
+                            </template>
+                        </div>
+
+                        <div class="pa b0 r0 l0 h14 bg_1 df pr8 pl0 z3 ls01">
+                            <div class="df fg1 f7 aic ffm pb2 gg7 oh">
+                                <div class="df">
+                                    <div class="ml3 e18 ffm" title="Perdidas">Perdidos: </div>
+                                    <div class="df aic ml3">
+                                        <span title="Paquetes perdidos" :style="{color: m_colores('pl', monitor.lastUpdate.porcentaje_paquetes_perdidos)}">{{ monitor.lastUpdate.paquetes_perdidos }}</span>
+                                        <span title="Numero total de paquetes">/{{ monitor.lastUpdate.paquetes.length }}</span>
+                                        <span title="Porcentaje de paquetes perdidos" class="ml3" :style="{color: m_colores('pl', monitor.lastUpdate.porcentaje_paquetes_perdidos)}">({{ monitor.lastUpdate.porcentaje_paquetes_perdidos }}%)</span>
+                                    </div>
+             
+                                </div>
+                                <div class="df" title="Media de la latencia">
+                                    <div class="ml3 e18 ffm pr1">Media: </div>
+                                    <div class="ml3" :style="{color: m_colores('lt', monitor.lastUpdate.latencia.media)}">{{ monitor.lastUpdate.latencia.media }}ms</div>
+                                </div>
+                            </div>
+                            <div class="df aic fs0">
+                                <div class="df tac f7 z3 df aic gg4 pb3" title="Hora local">
+                                    <svg class="h7 w7" fill="none" viewBox="0 0 24 24" stroke-width="2px" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /> </svg>
+                                    <span class="pt1 ffm">{{ m_obtenerFecha() }}</span>
+                                </div>
+                                <div class="dfac pb3 ml5" title="Indica si se esta actualizando el grafico">
+                                    <div class="h5 w5 br2 t04 o09" :style="{ backgroundColor: monitor.latidos ? monitor.color_latencia_dot : 'var(--bg_cuarto)' }"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <!--+--------------------------+
+                    |  Apartado Estadisticas   |
+                    +--------------------------+-->
+
+                <div class="fg1 df z1 ml7 mr7 br oh" v-else-if="ui.apartado_selecionado == 'Estadisticas'">
+                    <div class="dfc fg1 bg_3 w100p oh">
+                        <div class="df fg1 w06">
+                            <div class="fs0 dfc pr5">
+                                <div class="dfc ml10 mr10 f13">
+                                    <div class="row1 dfc">
+                                        <span>00000000000</span>
+                                        <span>00000000000</span>
+                                        <span>00000000000</span>
+                                        <span>00000000000</span>
+                                    </div>
+            
+                                    <div class="row1 dfc">
+                                        <span>00000000000</span>
+                                        <span>00000000000</span>
+                                        <span>00000000000</span>
+                                        <span>00000000000</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="fg1 bg_1 dfc oh pr">
+                                <!-- <div class="pa t0 r0 m5 dfc gg">
+                                    <div class="df f9 ffm">
+                                        <div class="h10 w10 br3" style="background-color: var(--co_gaf_verde);"></div>
+                                        <span class="ml5"> &gt; 3%</span>
+                                    </div>
+                                    <div class="df f9 ffm">
+                                        <div class="h10 w10 br3" style="background-color: var(--co_gaf_amarillo);"></div>
+                                        <span class="ml5"> &gt; 5%</span>
+                                    </div>
+                                    <div class="df f9 ffm">
+                                        <div class="h10 w10 br3" style="background-color: var(--co_gaf_rojo);"></div>
+                                        <span class="ml5"> &gt; 10% </span>
+                                    </div>
+                                    <div class="df f9 ffm">
+                                        <div class="h10 w10 br3" style="background-color: var(--co_gaf_desconectado);"></div>
+                                        <span class="ml5">Desconexion</span>
+                                    </div>
+            
+                                </div> -->
+                                <div class="df fg1">
+                                    <div class="dfc fg1 oh">
+                                        <div class="h25 tac bg_4 df">
+                                            *Incertar fecha display canvas*
+                                            <input type="date" class="fg1 w04 mr5 ml5" readonly ref="inputDate">
+                                            <div class="w05 df">
+                                                <button type="button">
+                                                    <svg fill="none" viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /> </svg>
+                                                </button>
+                                                <button type="button">
+                                                    <svg fill="none" viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /> </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <!-- <canvas class="irp fg1" id="mch11_2_2023" height="30"></canvas> -->
+                                        <div class="h25 bg_3"></div>
+                                    </div>
+                                </div>
+                                <div class="dfc mt10 ml10 mr10 mb5 pr">
+                                    <div class="fg1 df ml3 mr3 pa w08">
+                                        <div class="df gg1" v-for="(hora, i) in historial.dia_seleccionado.horas">
+                                            <canvas class="irp w100p" :id="'cdmh' + i"> </canvas>
+                                        </div>
+                                    </div>
+                                    <input type="range" name="rangoMuestra" id="rangoMuestra" multiple min="0" max="100"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="df p10 f10 w01 pr gg5">
+                            <div class="w09 dg gg1">
+                                <div class="bg_4 br3 mb2 mt2 pl5 pr5">
+                                    <span class="ffm f6">UPDATE</span>
+                                </div>
+            
+                                <template v-for="(dia, index) in h_computar_mini_historial">
+                                    <div class="fs0 df jcsb aic co_1" v-if="index < 6">
+                                        <div class="mt2 df c_db gg1 fg1">
+                                            <span>{{dia.fecha[0]}}</span><span class="co_2">•</span>
+                                            <span>{{dia.fecha[1]}}</span><span class="co_2">•</span>
+                                            <span>{{dia.fecha[2]}}</span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                            <div class="w07 fg1 gg1 dg oh">
+                         
+                                <div 
+                                    v-for="hora in [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]" 
+                                    class="fg1 tac pt1 aic df jcc">
+                                    <span class="bl">{{hora}}h</span>
+                                </div>
+            
+                                <template v-for="(dia, index) in h_computar_mini_historial">
+                                    <div v-if="index < 6" class="df" v-for="hora in [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]">
+                                        <canvas
+                                            class="w03"
+                                            :id="'cid'+dia.fecha[0]+'_'+dia.fecha[1]+'_'+dia.fecha[2]+'h'+hora">
+                                        </canvas>
+                                        {{ h_computar_canvas(dia, dia.fecha[0], dia.fecha[1], dia.fecha[2], hora) }}
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+            
+                    </div>
+                </div>
+
+
+                <div v-else>
+                    <div class="paa bg_3 p10 ml23 z2 f12 co_1 dfc" style="border-top-left-radius: 5px;">
+                        <div class="df jcc c01 pr ns">
+                            <div class="paa z1"></div>
+                            <img class="irp w100p" style="max-width: 13em;" src="../imagen/under_construction.gif" alt="">
+                        </div>
+                        <p class="lh20">Esta sección no está terminada aún.</p>
+                    </div>
+                </div>
+
+
+
+
+            </div>
+        </div>
+
+    </main>
+</body>
+</html>

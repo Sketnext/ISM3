@@ -2,13 +2,14 @@
 
 <head>
     <meta charset="UTF-8" />
-
-    <link rel="stylesheet" href="css/plot.css">
-    <link rel="stylesheet" href="css/main.css">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self';">
+    
+    <link rel="stylesheet" href="../css/plot.css">
+    <link rel="stylesheet" href="../css/main.css">
     <title>ISM</title>
 
-    <script defer src="js/vue.global.js"></script>
-    <script defer src="js/render.js"></script>
+    <script defer src="../js/vue.global.js"></script>
+    <script defer src="../js/render.js"></script>
 </head>
 
 <body class="df paa">
@@ -18,7 +19,7 @@
                 <div class="dfac w23 h20 pr nav_cont_tray">
                     <!-- estado.entrada -->
                     <div class="paa z2" style="-webkit-app-region: drag;"></div>
-                    <img class="h15 w15 pt5 z1 pr t1" tray :src="'./tray/' + icono_tray" alt="">
+                    <img class="h15 w15 pt5 z1 pr t1" tray :src="'../tray/' + icono_tray" alt="">
                 </div>
                 <div class="df aist mt4 gg4 z1 h20 nav_cont_botones_menu">
                     <button 
@@ -144,15 +145,15 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="dfc mt5 bg_4 br_3 oh pr gg e02">
+                        <div class="dfc mt5 br_3 oh pr gg e02">
                             <div 
                                 class="df" 
                                 v-for="(dia, k) in estadisticas.dias"
                                 :style="{height: estadisticas.ui.alto_graf_dia + 'px'}"
                             >
                  
-
-                                <div class="dfc pr4 e04 pb5 pl5 pt15 ps l0 z2 bg_4">
+                                <div class="bg_1 df h20" style="width: 100px;"></div>
+                                <div class="dfc pr4 e04 pb5 pl5 pt15 ps l0 z2 bg_4 br2">
                                     <template v-for="(escala, index) in [0,10,20,30,40,50,60,70,80]">
                                         <span class="f6 h10 oh">{{ escala }}</span>
                                     </template>
@@ -163,13 +164,14 @@
                                     </template>
                                     <div class="e01 dfc pr" v-for="(hora, key) in dia.puntos">
                                         <div class="h15">
-                                            <div class="t3 f7 tac mt5">{{ fn_format24h_to_12h(key) }}</div>
+                                            <div class="t3 f7 tac">{{ fn_format24h_to_12h(key) }}</div>
                                         </div>
                                         <div class="e01q df aife oh">
                                             <template v-for="minuto in hora">
-                                                <div v-if="minuto[0] == -1"  :style="{width: estadisticas.ui.ancho_barras + 'px'}" class="h1 e03a"></div>
-                                                <div v-if="minuto[0] == 0" :style="{width: estadisticas.ui.ancho_barras + 'px'}"  class="h1 e03a"></div>
-                                                <div v-else class=" e03" :style="{width: estadisticas.ui.ancho_barras + 'px', height: minuto[0], backgroundColor: colorParaDrops(minuto[0])}"></div>
+                                                <div v-if="minuto[0] == -1"  :style="{width: estadisticas.ui.ancho_barras + 'px'}" class="h3 e03a"></div>
+                                                <div v-if="minuto[0] == 0" :style="{width: estadisticas.ui.ancho_barras + 'px'}"  class="h3 e03a"></div>
+                                                <div v-if="minuto[0] > 0" class="e03" :style="{width: estadisticas.ui.ancho_barras + 'px', height: minuto[0] * 2, backgroundColor: colorParaDrops(minuto[0])}"></div>
+                                                <div v-else class="h3 e03a"></div>
                                             </template>
                                         </div>
                                     </div>
@@ -186,7 +188,7 @@
                 <div class="fg1 df" v-else-if="ui.apartado_selecionado == 'Monitor'">
                     <div class="dfc f7 ffm jcsb tae pb10 pt2 pl6 pr3 a22 pr" style="border-top-left-radius: 0px;">
                         <div class="pa t-20 r0 l0 bg_1 z1 h20 dfac tac pl3 a23b">[ms]</div>
-                        <div v-for="(punto, key) in calcular_escala_ejeY()" class="e05" :class="{'co_2': !esPar(key)}">
+                        <div v-for="(punto, key) in calcular_escala_ejeY()" class="e05" :class="{'co_2': !(key % 2) == 0}">
                             <span v-if="punto < 1000">{{ punto }}</span>
                             <span v-else>{{ punto / 1000 }}K</span>
                         </div>
@@ -242,7 +244,13 @@
                             </div>
                      
                         </div>
-                        <div class="paa dfac z4 f15 co_2" v-show="monitor.grafico.ejeX.coordenadas.length == 0">Esperando datos...</div>
+                        <div class="paa dfac z4 f15 co_2 e19" v-show="monitor.grafico.ejeX.coordenadas.length == 0">
+                            <div class="dfc pl7 pr7 gg pb5">
+                                <span>Esperando datos...</span>
+                                <span class="f9 lh12">Esta ventana debería desaparecer en 1s, si no desaparece algo inesperado ha ocurrido.</span>
+                            </div>
+                        </div>
+                        <!-- <div class="paa dfac z4 f15 co_2" v-show="monitor.grafico.ejeX.coordenadas.length == 0">Esperando datos...</div> -->
                         <!-- <div class="l0 r0 pa z2 a07 t05 b0 h1 df aifs f7 ffm lh12 pb12" :style="{ height: monitor.grafico.ejeY.indicadores.min + 'px' }"> </div> -->
                         <!-- <div class="l0 r0 pa z2 a07b t05 t0 h1 df aife f7 ffm lh12" :style="{ height: monitor.grafico.ejeY.indicadores.max + 'px' }"> </div> -->
                         <div class="paa a02 f9 z1 df jcs mb14 ml3 mr5">
@@ -251,37 +259,85 @@
                             </div> -->
 
                             <template v-for="(punto, key) in monitor.grafico.ejeX.coordenadas">
-                                <div v-if="punto[0] == -1" class="a02b pr"></div>
-                                <div v-else-if="punto[0] == -2" class="a02e"></div>
-                                <div v-else-if="punto[0] > 0" class="a02c"
-                                    :style="{height: punto[1], backgroundColor: color(punto[0])}"></div>
-                                <div v-else class="a02e a02e2"></div>
+                                <!-- <div
+                                    class="punto_monitor"
+                                    :class="determinar_color_pm(punto)"
+                                ></div> -->
+                                <div v-if="punto[0] == -1"      class="punto_monitor pm_1"></div>
+                                <div v-else-if="punto[0] == -2" class="punto_monitor pm_2"></div>
+                                <div v-else-if="punto[0] > 0"   
+                                    class="punto_monitor"
+                                    :class="punto_monior_color(punto[0])"
+                                    :style="{ height: punto[1] }"
+                                    ></div>
+                                <div v-else class="punto_monitor"></div>
                             </template>
                         </div>
 
                         <div class="pa b0 r0 l0 h14 bg_1 df pr8 pl5 z3">
-                            <div class="df fg1 f7 aic gg7 ffm pb2">
+                            <div class="df fg1 f7 aic ffm pb2 gg8 oh">
                                 <div class="df aic gg3" title="Ip objetivo (Es la IP a la que se hace el ping)">
                                     <svg class="w7 h7 pb1" viewBox="0 0 20 20" fill="currentColor"> <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm14 1a1 1 0 11-2 0 1 1 0 012 0zM2 13a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2zm14 1a1 1 0 11-2 0 1 1 0 012 0z" clip-rule="evenodd" /> </svg>
                                     <span>{{ monitor.ip_objetivo }}</span>
                                 </div>
                                 <div class="df" title="Porcentaje de paquetes perdidos (Packet loss)"> 
                                     <div class="df aic">{{ monitor.grafico.ms.perdidas[1] }}% </div> 
-                                    <div class="ml3" :style="{color: colorParaDrops(monitor.grafico.ms.perdidas[1])}">Perdidos</div>
-                                </div>
+                                    <div class="ml3 e18 ffm" :style="{color: colorParaDrops(monitor.grafico.ms.perdidas[1])}">Perdidos</div>
+
                                 <div class="df" title="Media de la latencia">
                                     <div>{{ monitor.grafico.ms.media }}ms</div>
-                                    <div class="ml3" :style="{color: colorParaMS(monitor.grafico.ms.media)}">Media</div>
+                                    <div class="ml3 e18                                 </div>ffm" :style="{color: colorParaMS(monitor.grafico.ms.media)}">Media</div>
                                 </div>
                             </div>
                             <div class="df aic fs0">
                                 <div class="df tac f7 z3 df aic gg4 pb3" title="Hora local">
-                                    <span class="pt1">{{ getFecha() }}</span>
                                     <svg class="h7 w7" fill="none" viewBox="0 0 24 24" stroke-width="2px" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /> </svg>
+                                    <span class="pt1 ffm">{{ getFecha() }}</span>
                                 </div>
                                 <div class="dfac pb3 ml5" title="Indica si se esta actualizando el grafico">
                                     <div class="h5 w5 br2 t04 o05" :style="{ backgroundColor: monitor.latidos ? 'var(--co_txt_verde)' : 'var(--bg_cuarto)' }"></div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="paa df bg_3" v-else-if="ui.apartado_selecionado == 'Configuración'">
+                    <div class="bg_1 fs0 w22 dfc aic gg5 pt5">
+                        <div class="h14 w14 bg_3 br3" v-for="i in [0,0,0,0,0]"></div>
+                    </div>
+                    <div class="pl10 fg1 co_1 e20 pr20 e21">
+                        <div>
+                            <span class="fwb">Apariencia</span>
+                            <div class="mt5">
+                                <div class="df">
+                                    <span class="f14 fg1">Temas</span>
+                                </div>
+                                <div class="dfc gg">
+                                    <div class="df"></div>
+                                    <div class="df">
+                                        <div></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div>
+                            <span class="fwb">Gestion de datos</span>
+                            <div class="mt5">
+                                <div class="df">
+                                    <span class="f14 fg1">Almacenar estadisticas del estado del monitor</span>
+                                    <input type="checkbox">
+                                </div>
+                                <span class="co_2 f10 mt7 bl lh15">A cada minuto se guarda el estado general de tu conexion en una base de datos local, estos datos luego son utilizados en la seccion "Estadisticas".</span>
+                            </div>
+
+                            <div class="mt5">
+                                <div class="df">
+                                    <span class="f14 fg1">Compartir el estado de tu conexion de forma anonima</span>
+                                    <button type="button" class="f11 lh0">Configurar</button>
+                                    <input type="checkbox">
+                                </div>
+                                <span class="co_2 f10 mt7 bl lh15">Envia de forma anonima el estado de tu conexion a nuestro servidor el cual usa estos datos para hacer posible el funcionamiento de la seccion "Mapa", si desactiva esta opcion no podra hacer uso de dicha seccion.</span>
                             </div>
                         </div>
                     </div>

@@ -128,6 +128,7 @@ html{line-height: 1.15;} body{margin: 0;font-family: sans-serif;} main{display: 
 .gg12{grid-gap: 12px;}
 .gg11{grid-gap: 11px;}
 .gg10{grid-gap: 10px;}
+.gg8{grid-gap: 8px;}
 .gg7{grid-gap: 7px;}
 .gg5{grid-gap: 5px;}
 .gg4{grid-gap: 4px;}
@@ -874,6 +875,11 @@ a{text-decoration: none;color: #226efb;}
 .xbtn3:hover{transform: scale(1.05); box-shadow: 0 0 2px rgb(148 148 148 / 92%), 0 0 6px rgb(148 148 148 / 65%);}
 
 .ahb{animation: heartBeat 1s;}
+
+
+.c_db > *{
+  display: inline-block;
+}
 
 
 /* animate.css - https://animate.style/ | Licensed under the MIT license - http://opensource.org/licenses/MIT | Copyright (c) 2020 Animate.css */
