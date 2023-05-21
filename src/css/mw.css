@@ -515,7 +515,7 @@ main {
     background: repeating-linear-gradient( -45deg, var(--bg_principal), var(--bg_principal) 5px, #e5e5f700 5px, #e5e5f700 15px );
   }
   
-  @media only screen and (max-width: 220px) {
+  @media only screen and (max-width: 230px) {
     .e18{
       text-transform: uppercase;
       overflow: hidden;

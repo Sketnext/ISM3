@@ -219,8 +219,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="df ml7">
-                                <span class="f7 ffm lh11">↑ {{ monitor.grafico.tx }}   ↓ {{ monitor.grafico.rx }}</span>
+                            <div class="df ml7 df">
+                                <div class="df p3 pl5 pr5">
+                                    <span class="f7 ffm">↑ {{ monitor.grafico.tx }}   ↓ {{ monitor.grafico.rx }}</span>
+                                </div>
                             </div>
                         </div>
 
@@ -272,7 +274,7 @@
                                     <span class="pt1 ffm">{{ m_obtenerFecha() }}</span>
                                 </div>
                                 <div class="dfac pb3 ml5" title="Indica si se esta actualizando el grafico">
-                                    <div class="h5 w5 br2 t04 o09" :style="{ backgroundColor: monitor.latidos ? monitor.color_latencia_dot : 'var(--bg_cuarto)' }"></div>
+                                    <div class="h5 w5 br2 t02 o09" :style="{ backgroundColor: monitor.color_latencia_dot }"></div>
                                 </div>
                             </div>
                         </div>

@@ -1,6 +1,6 @@
 {
   "name": "ism3",
-  "version": "0.4.139-alfa",
+  "version": "0.4.140-alfa",
   "description": "Internet Status Monitor",
   "main": "app.js",
   "scripts": {

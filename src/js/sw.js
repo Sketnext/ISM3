@@ -58,7 +58,12 @@ var sw = Vue.createApp({
                 historial_ultimos_dias: [],
             },
             conf: {
-                formato_12h: false
+                formato_12h: false,
+                tolerancias: {
+                    // [baja, media, alta?]
+                    latencia: [150, 300],
+                    perdidas: [2, 5]
+                }
             }
         }
     },
@@ -114,9 +119,54 @@ var sw = Vue.createApp({
             const r = await p.ipcRenderer.invoke('obtenerDatos:ultimosDias');
             
             this.historial.historial_ultimos_dias = r;
-            this.historial.dia_seleccionado = r[0];
+            // this.historial.dia_seleccionado = r[0];
+            this.h_seleccionarDia(r[0].fecha[0], r[0].fecha[1], r[0].fecha[2]);
     
             this.h_renderizar_selectedCanvas_mini(this.historial.dia_seleccionado);
+        },
+        h_seleccionarDia(dia, mes, año){
+            console.log(`fn h_seleccionarDia: ${dia}/${mes}/${año}`);
+            let datos_dia = null;
+
+            // Resolver los datos del dia
+            console.log(`Resolviendo datos...`);
+
+            // Buscando en el historial_ultimos_dias
+            let hud_search = this.historial.historial_ultimos_dias.find(
+                (obj) => obj.fecha[0] === dia && obj.fecha[1] === mes && obj.fecha[2] === año
+            )
+
+            if (hud_search != undefined){
+                this.historial.dia_seleccionado = hud_search;
+                this.historial.dia_selec_stats = this.h_obtenerStatsDia(hud_search);
+            }else{
+                console.log(`404.`);
+            }
+
+ 
+            
+
+        },
+        h_obtenerStatsDia(dia){
+            let stats = {
+                registros: 0,
+                latencia: { 
+                    baja: 0, media: 0, alta: 0,perdida: 0
+                },
+                porcentaje: {
+                    latencia: {baja: 0, media: 0, alta: 0, perdida: 0 }
+                }
+   
+            }
+
+            for (const hora of dia) {
+                for (const minuto of hora) {
+                    console.log(`${hora} -- ${minuto}`)
+                }
+            }
+            console.log("Obtener stats", dia);
+
+            return stats
         },
         h_renderizar_selectedCanvas_mini(datos_dia){
 

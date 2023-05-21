@@ -118,7 +118,7 @@ data() {
                 }
             },
 
-            color_latencia_dot: "var(--co_txt_verde)"
+            color_latencia_dot: "var(--co_gaf_desconectado)"
         },
 
 
@@ -299,6 +299,8 @@ methods: {
                 break
             case 'pt_b': /* Punto (barra del grafico) (return css var)*/
                 if (arg == 0 ) return 'var(--co_gaf_lostpackage)';
+                else if (arg == -2) return 'var(--co_gaf_desconectado)';
+                else if (arg == -1) return 'var(--co_gaf_rojo)';
                 else if (arg < 150) return 'var(--co_gaf_verde)';
                 else if(arg >= 150 && arg <= 300) return 'var(--co_gaf_amarillo)';
                 else if(arg > 300) return 'var(--co_gaf_rojo)';

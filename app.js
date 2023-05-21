@@ -332,8 +332,8 @@ app.whenReady().then(() => {
     interval.velocidadRed.interval_obj = setInterval(async ()=>{
       let { rx, tx } = await util.getCurrentSpeed();
 
-      const rxKbps = ((rx - interval.velocidadRed.oldRx) * 8 / (interval.velocidadRed.interval / 1000)) / 1000;
-      const txKbps = ((tx - interval.velocidadRed.oldTx) * 8 / (interval.velocidadRed.interval / 1000)) / 1000;
+      const rxKbps = ((rx - interval.velocidadRed.oldRx) / (interval.velocidadRed.interval / 1000)) / 1000;
+      const txKbps = ((tx - interval.velocidadRed.oldTx) / (interval.velocidadRed.interval / 1000)) / 1000;
 
       if (interval.velocidadRed.oldRx != 0){
         mw.webContents.send('eMonitorNetSpeed', {

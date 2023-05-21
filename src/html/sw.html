@@ -49,9 +49,9 @@
                         <div class="h25 tac bg_3 df p3 pr10 pl10">
                             <div class="fg1"></div>
                             <div>
-                                <button class="df br4 f14 p3 pl7 pr7">
-                                    <span>{{ initMes2str(4, true) }}</span>
-                                    <span class="ml5">26</span>
+                                <button v-if="historial.dia_seleccionado.fecha" class="df br4 f14 p3 pl7 pr7">
+                                    <span>{{ initMes2str(historial.dia_seleccionado.fecha[1], true) }}</span>
+                                    <span class="ml5">{{ historial.dia_seleccionado.fecha[0] }}</span>
                                 </button>
                             </div>
                         
