@@ -14,7 +14,7 @@
     "colors": "^1.4.0",
     "node-zip": "^1.0.1",
     "request": "^2.88.2",
-    "sqlite3": "^5.1.4"
+    "sqlite3": "^6.0.1"
   },
   "devDependencies": {
     "electron": "^23.3.13",
